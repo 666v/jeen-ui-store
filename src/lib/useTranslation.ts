@@ -15,9 +15,9 @@ export function useTranslation() {
   }
 
   const t = (key: string, params?: Record<string, string | number>): string => {
-    let translation = getNested(translations[locale as keyof typeof translations], key) ||
-                      getNested(translations.en, key) ||
-                      key;
+    const translation = getNested(translations[locale as keyof typeof translations], key) ||
+                        getNested(translations.en, key) ||
+                        key;
 
     // If the translation is an object (not a string), return the key itself
     if (typeof translation === 'object' && translation !== null) {
