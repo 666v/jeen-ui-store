@@ -19,57 +19,41 @@ export default function CoursesPage() {
 
   return (
     <AccountLayout>
-      <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl shadow-xl p-6">
-        <h3 className="text-2xl font-semibold text-foreground mb-6">My Courses</h3>
+      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl p-8">
+        <h3 className="text-2xl font-extrabold text-white mb-6">My Courses</h3>
         
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse border border-border rounded-lg p-4">
-                <div className="h-4 bg-muted rounded w-1/4 mb-2"></div>
-                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-2 bg-muted rounded w-full"></div>
-              </div>
+              <div key={i} className="animate-pulse border-2 border-zinc-800/50 rounded-2xl p-6 bg-zinc-900/60"></div>
             ))}
           </div>
         ) : courses?.length ? (
           <div className="space-y-4">
             {courses.map((enrollment: any) => (
-              <div key={enrollment.id} className="border border-border rounded-xl p-6 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-shadow duration-300">
+              <div key={enrollment.id} className="border-2 border-zinc-800/50 rounded-2xl p-6 bg-zinc-900/60 hover:shadow-emerald-500/10 transition-shadow duration-300">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-foreground">
-                    {enrollment.course?.title}
-                  </h4>
-                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    {enrollment.progress}% Complete
-                  </span>
+                  <h4 className="text-lg font-bold text-white">{enrollment.course?.title}</h4>
+                  <span className="text-sm font-bold text-blue-400">{enrollment.progress}% Complete</span>
                 </div>
                 
                 {enrollment.course?.description && (
-                  <p className="text-muted-foreground mb-4">
-                    {enrollment.course.description}
-                  </p>
+                  <p className="text-zinc-400 mb-4">{enrollment.course.description}</p>
                 )}
                 
-                <div className="w-full bg-muted rounded-full h-2 mb-4">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${enrollment.progress}%` }}
-                  ></div>
+                <div className="w-full bg-zinc-800 rounded-full h-2 mb-4">
+                  <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${enrollment.progress}%` }}></div>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-zinc-400">
                     {enrollment.is_active ? (
-                      <span className="text-green-600 dark:text-green-400">● Active</span>
+                      <span className="text-emerald-400 font-bold">● Active</span>
                     ) : (
-                      <span className="text-red-600 dark:text-red-400">● Inactive</span>
+                      <span className="text-red-400 font-bold">● Inactive</span>
                     )}
                   </div>
-                  <Link 
-                    href={`/courses/${enrollment.id}`} 
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
-                  >
+                  <Link href={`/courses/${enrollment.id}`} className="inline-flex items-center px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded-xl transition-colors duration-200">
                     Continue Learning →
                   </Link>
                 </div>
@@ -79,8 +63,8 @@ export default function CoursesPage() {
         ) : (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🎓</div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">No Enrolled Courses</h3>
-            <p className="text-muted-foreground mb-6">You haven't enrolled in any courses yet</p>
+            <h3 className="text-xl font-semibold text-white mb-2">No Enrolled Courses</h3>
+            <p className="text-zinc-400 mb-6">You haven't enrolled in any courses yet</p>
           </div>
         )}
       </div>

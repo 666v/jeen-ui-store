@@ -3,13 +3,32 @@
 import { useQuery } from '@tanstack/react-query';
 import { categoriesApi } from '@/lib/store-api';
 import Link from 'next/link';
-import { useTranslation } from '@/lib/useTranslation';
 import { useLanguage } from '@/components/LanguageProvider';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export default function ClientCategoriesPage() {
-  const { t } = useTranslation();
   const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'categories': 'Categories',
+        'browse_by_category': 'Browse products by category',
+        'no_categories': 'No Categories Found',
+        'no_categories_desc': "We're working on organizing our products. Check back soon!",
+        'view_all_products': 'View All Products',
+        'products': 'products'
+      },
+      ar: {
+        'categories': 'الأقسام',
+        'browse_by_category': 'تصفح المنتجات حسب القسم',
+        'no_categories': 'لا توجد أقسام',
+        'no_categories_desc': 'نحن نعمل على تنظيم منتجاتنا. تفقد مرة أخرى قريباً!',
+        'view_all_products': 'عرض جميع المنتجات',
+        'products': 'منتج'
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: categoriesApi.getAll,

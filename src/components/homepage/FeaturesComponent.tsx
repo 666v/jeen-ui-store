@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/lib/useTranslation';
+import { useLanguage } from '@/components/LanguageProvider';
 
 interface Feature {
   id?: number;
@@ -23,7 +23,20 @@ interface FeaturesComponentProps {
 }
 
 export default function FeaturesComponent({ component }: FeaturesComponentProps) {
-  const { t, locale } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'storeFeatures': 'Store Features',
+        'storeFeaturesDescription': 'Discover the unique features that make our store stand out and provide the best experience for you.',
+      },
+      ar: {
+        'storeFeatures': 'مميزات المتجر',
+        'storeFeaturesDescription': 'اكتشف الميزات الفريدة التي تجعل متجرنا مميزًا وتوفر لك أفضل تجربة.',
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || translations['en'][key];
+  };
   const features = component.data.features || [];
 
   if (!features || features.length === 0) {

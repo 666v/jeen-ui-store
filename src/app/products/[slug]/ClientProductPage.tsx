@@ -14,7 +14,6 @@ import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ShareIcon } from '@heroicons/
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { toast } from 'sonner';
 import type { Product, Review, SubscriptionVariant } from '@/lib/types';
-import { useTranslation } from '@/lib/useTranslation';
 import { useLanguage } from '@/components/LanguageProvider';
 
 interface ClientProductPageProps {
@@ -23,8 +22,36 @@ interface ClientProductPageProps {
 }
 
 export default function ClientProductPage({ slug, initialProduct }: ClientProductPageProps) {
-  const { t } = useTranslation();
   const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'product_not_found': 'Product Not Found',
+        'product_not_found_desc': 'The requested product could not be found.',
+        'add_to_cart': 'Add to Cart',
+        'out_of_stock': 'Out of Stock',
+        'in_stock': 'In Stock',
+        'wishlist': 'Wishlist',
+        'login_required': 'Login required',
+        'removed_from_wishlist': 'Removed from wishlist',
+        'product_added_to_cart': 'Product added to cart',
+        // ...add more as needed
+      },
+      ar: {
+        'product_not_found': 'المنتج غير موجود',
+        'product_not_found_desc': 'لم يتم العثور على المنتج المطلوب.',
+        'add_to_cart': 'أضف إلى السلة',
+        'out_of_stock': 'غير متوفر',
+        'in_stock': 'متوفر',
+        'wishlist': 'قائمة الرغبات',
+        'login_required': 'مطلوب تسجيل الدخول',
+        'removed_from_wishlist': 'تمت الإزالة من قائمة الرغبات',
+        'product_added_to_cart': 'تمت إضافة المنتج إلى السلة',
+        // ...add more as needed
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   const router = useRouter();
   const { addItem } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -143,10 +170,10 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-2">
-            {locale === 'ar' ? 'المنتج غير موجود' : 'Product Not Found'}
+            {t('product_not_found')}
           </h1>
           <p className="text-muted-foreground">
-            {locale === 'ar' ? 'لم يتم العثور على المنتج المطلوب.' : 'The requested product could not be found.'}
+            {t('product_not_found_desc')}
           </p>
           </div>
         </div>
@@ -442,12 +469,12 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
                 <div className="space-y-4">
                   {product.fields.map((field, index) => (
                     <div key={index}>
-                          <label className="block text-sm font-medium text-white mb-1">
+                          <label className="block text-sm font-bold text-white mb-1">
                         {field.name} {field.required && <span className="text-red-500">*</span>}
                       </label>
                       {field.type === 'select' && field.options ? (
                         <select
-                              className="w-full border border-border rounded-md px-3 py-2 bg-background/80 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/40 backdrop-blur-sm"
+                              className="w-full border border-zinc-700 rounded-xl px-4 py-3 bg-zinc-900/80 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/60 shadow-inner transition-all"
                           value={customFields[index] || ''}
                           onChange={(e) => handleFieldChange(index, e.target.value)}
                           required={field.required}
@@ -456,26 +483,28 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
                             {locale === 'ar' ? 'اختر خياراً' : 'Select an option'}
                           </option>
                           {Object.entries(field.options).map(([key, option]: [string, any]) => (
-                            <option key={key} value={key}>
+                            <option key={key} value={key} className="bg-zinc-900 text-white">
                                   {option.name} {option.price && `(+${formatPriceWithHydration(option.price)})`}
                             </option>
                           ))}
                         </select>
                       ) : field.type === 'textarea' ? (
                         <textarea
-                              className="w-full border border-border rounded-md px-3 py-2 bg-background/80 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/40 backdrop-blur-sm"
+                              className="w-full border border-zinc-700 rounded-xl px-4 py-3 bg-zinc-900/80 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/60 shadow-inner transition-all"
                           rows={3}
                           value={customFields[index] || ''}
                           onChange={(e) => handleFieldChange(index, e.target.value)}
                           required={field.required}
+                          placeholder={locale === 'ar' ? 'اكتب هنا...' : 'Type here...'}
                         />
                       ) : (
                         <input
                           type={field.type === 'number' ? 'number' : 'text'}
-                              className="w-full border border-border rounded-md px-3 py-2 bg-background/80 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/40 backdrop-blur-sm"
+                              className="w-full border border-zinc-700 rounded-xl px-4 py-3 bg-zinc-900/80 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/60 shadow-inner transition-all"
                           value={customFields[index] || ''}
                           onChange={(e) => handleFieldChange(index, e.target.value)}
                           required={field.required}
+                          placeholder={locale === 'ar' ? 'اكتب هنا...' : 'Type here...'}
                         />
                       )}
                     </div>
@@ -521,9 +550,8 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
       isLoading ||
       (product.stock && !product.stock.unlimited && product.stock.available === 0)
     }
-    variant="outline"
     size="lg"
-    className="h-16 w-full rounded-xl border-2 font-bold text-lg bg-emerald-500/10 hover:bg-emerald-500/20 shadow-lg hover:shadow-emerald-500/30 transition-all text-white"
+    className="h-16 w-full rounded-xl font-bold text-lg bg-primary/10 hover:bg-primary/20 text-primary border-2 border-primary/30 shadow-lg transition-colors duration-200 focus:ring-2 focus:ring-primary/40"
   >
     {isLoading
       ? locale === 'ar' ? 'جاري التحميل...' : 'Loading...'
@@ -537,8 +565,9 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
       (product.stock && !product.stock.unlimited && product.stock.available === 0) ||
       !isAuthenticated
     }
-    className="h-16 w-full bg-primary hover:bg-primary/90 rounded-xl shadow-lg font-bold text-lg transition-all text-white"
     size="lg"
+    variant="outline"
+    className="h-16 w-full rounded-xl font-bold text-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-xl shadow-emerald-500/20 border-0 hover:from-emerald-600 hover:to-emerald-700 hover:scale-[1.03] focus:ring-2 focus:ring-emerald-400/80 transition-all duration-200"
   >
     {isQuickPurchasing
       ? locale === 'ar' ? 'جاري التحميل...' : 'Loading...'
@@ -548,16 +577,19 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
 
                 <div className="grid grid-cols-2 gap-3 animate-fade-in-delay">
                 <Button
-                  variant="outline"
                   size="sm"
-                    className="h-12 rounded-full bg-background/80 backdrop-blur-sm border-2 flex items-center justify-center shadow hover:bg-emerald-500/10 transition-all text-white"
                   onClick={handleWishlistToggle}
                   disabled={isWishlistLoading}
+                  className={`h-12 rounded-full flex items-center justify-center w-full font-bold text-base transition-all duration-200 shadow-lg border-0
+                    ${isInWishlist(product.id)
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white ring-2 ring-emerald-400/40 hover:from-emerald-600 hover:to-emerald-700'
+                      : 'bg-zinc-900/80 text-white hover:bg-emerald-500/10 hover:text-emerald-400'}
+                    focus:ring-2 focus:ring-emerald-400/80 hover:scale-105`}
                 >
                   {isInWishlist(product.id) ? (
-                      <HeartSolidIcon className="h-5 w-5 mr-2 text-red-500" />
+                    <HeartSolidIcon className="h-5 w-5 mr-2 text-white animate-pulse" />
                   ) : (
-                      <HeartIcon className="h-5 w-5 mr-2" />
+                    <HeartIcon className="h-5 w-5 mr-2 text-emerald-400" />
                   )}
                   <span className="hidden sm:inline">
                     {isWishlistLoading ?
@@ -574,43 +606,17 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
                     }
                   </span>
                 </Button>
-                  <Button variant="outline" size="sm" className="h-12 rounded-full bg-background/80 backdrop-blur-sm border-2 flex items-center justify-center shadow hover:bg-blue-500/10 transition-all text-white">
-                    <ShareIcon className="h-5 w-5 mr-2" />
-                  {locale === 'ar' ? 'مشاركة' : 'Share'}
-                </Button>
-              </div>
-            {(quantity > 1 || calculatedPrice.fieldPriceAddition > 0 || selectedVariant) && (
-                  <div className="bg-zinc-900/60 border border-zinc-800/40 rounded-xl p-4 mt-2 backdrop-blur-sm animate-fade-in">
-                    <h3 className="font-medium text-white mb-2">
-                  {locale === 'ar' ? 'إجمالي السعر' : 'Total Price'}
-                </h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                        <span className="text-white/80">{locale === 'ar' ? 'السعر الأساسي:' : 'Base Price:'}</span>
-                        <span className="text-white">{formatPriceWithHydration(calculatedPrice.basePrice)}</span>
-                  </div>
-                  {calculatedPrice.fieldPriceAddition > 0 && (
-                    <div className="flex justify-between">
-                          <span className="text-white/80">{locale === 'ar' ? 'الخيارات:' : 'Options:'}</span>
-                          <span className="text-white">+{formatPriceWithHydration(calculatedPrice.fieldPriceAddition)}</span>
-                    </div>
-                  )}
-                  {quantity > 1 && (
-                    <div className="flex justify-between">
-                          <span className="text-white/80">{locale === 'ar' ? 'الكمية:' : 'Quantity:'}</span>
-                          <span className="text-white">× {quantity}</span>
-                    </div>
-                  )}
-                  <hr className="border-border/30" />
-                  <div className="flex justify-between font-semibold text-lg">
-                        <span className="text-white">{locale === 'ar' ? 'الإجمالي:' : 'Total:'}</span>
-                        <span className="text-white">{calculatedPrice.formatted}</span>
-                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => {/* share logic here */}}
+                    className="h-12 rounded-full flex items-center justify-center w-full font-bold text-base transition-all duration-200 shadow-lg border-0 bg-zinc-900/80 text-white hover:bg-emerald-500/10 hover:text-emerald-400 focus:ring-2 focus:ring-emerald-400/80 hover:scale-105"
+                  >
+                    <ShareIcon className="h-5 w-5 mr-2 text-emerald-400" />
+                    {locale === 'ar' ? 'مشاركة' : 'Share'}
+                  </Button>
                 </div>
-              </div>
-            )}
             {product.stock && (
-                  <div className="text-sm mt-2 animate-fade-in hidden">
+                  <div className="text-sm mt-3 animate-fade-in">
                 {product.stock.unlimited ? (
                       <span className="text-green-400 font-semibold bg-green-900/30 px-3 py-1 rounded-full backdrop-blur-sm shadow">
                     ✓ {locale === 'ar' ? 'متوفر في المخزن' : 'In Stock'}
@@ -824,7 +830,7 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
                 disabled={isLoading || (product.stock && !product.stock.unlimited && product.stock.available === 0)}
                 variant="outline"
                 size="lg"
-                className="h-12 lg:h-14 rounded-xl border-2 font-bold text-sm lg:text-lg bg-emerald-500/10 hover:bg-emerald-500/20 shadow-lg hover:shadow-emerald-500/30 transition-all text-white"
+                className="h-12 lg:h-14 rounded-xl font-bold text-sm lg:text-lg bg-emerald-500/10 hover:bg-emerald-500/20 shadow-lg hover:shadow-emerald-500/30 transition-all text-white"
               >
                 {isLoading ?
                   (locale === 'ar' ? 'جاري التحميل...' : 'Loading...') :
@@ -843,25 +849,6 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
                 }
               </Button>
             </div>
-
-            {/* Stock Status */}
-            {product.stock && (
-              <div className="mt-3 text-center">
-                {product.stock.unlimited ? (
-                  <span className="text-green-400 font-medium text-sm lg:text-base bg-green-900/30 px-3 py-1 rounded-full backdrop-blur-sm">
-                    ✓ {locale === 'ar' ? 'متوفر في المخزن' : 'In Stock'}
-                  </span>
-                ) : product.stock.available > 0 ? (
-                  <span className="text-green-400 font-medium text-sm lg:text-base bg-green-900/30 px-3 py-1 rounded-full backdrop-blur-sm">
-                    ✓ {product.stock.available} {locale === 'ar' ? 'متوفر' : 'available'}
-                  </span>
-                ) : (
-                  <span className="text-red-400 font-medium text-sm lg:text-base bg-red-900/30 px-3 py-1 rounded-full backdrop-blur-sm">
-                    ✗ {locale === 'ar' ? 'نفد من المخزن' : 'Out of Stock'}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from '@/lib/useTranslation';
 import { useStore } from '@/components/StoreProvider';
 import { useLanguage } from '@/components/LanguageProvider';
 
@@ -11,10 +10,27 @@ interface MaintenanceModeProps {
 }
 
 export default function MaintenanceMode({ reason, estimatedTime }: MaintenanceModeProps) {
-  const { t } = useTranslation();
   const { store } = useStore();
-  const { isRTL } = useLanguage();
-
+  const { isRTL, locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'maintenance_title': 'We are currently undergoing maintenance',
+        'maintenance_reason_title': 'Reason for Maintenance',
+        'maintenance_estimated_time': 'Estimated Time',
+        'maintenance_contact': 'If you have any questions, please contact us:',
+        'maintenance_refresh': 'Refresh',
+      },
+      ar: {
+        'maintenance_title': 'نحن حالياً في وضع الصيانة',
+        'maintenance_reason_title': 'سبب الصيانة',
+        'maintenance_estimated_time': 'الوقت المتوقع',
+        'maintenance_contact': 'إذا كان لديك أي استفسار، يرجى التواصل معنا:',
+        'maintenance_refresh': 'تحديث',
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || translations['en'][key];
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 text-foreground relative overflow-hidden">

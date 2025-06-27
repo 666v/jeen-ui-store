@@ -7,8 +7,8 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useTranslation } from '@/lib/useTranslation';
 import AccountLayout from '@/components/layout/AccountLayout';
+import { useLanguage } from '@/components/LanguageProvider';
 
 const profileSchema = z.object({
   firstName: z.string().min(2, 'First name is required'),
@@ -20,7 +20,36 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function AccountPage() {
-  const { t } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'personal_info': 'Personal Information',
+        'first_name': 'First Name',
+        'last_name': 'Last Name',
+        'email': 'Email',
+        'phone': 'Phone',
+        'phone_cannot_change': 'Phone number cannot be changed',
+        'update_profile': 'Update Profile',
+        'updating': 'Updating...',
+        'loading_account': 'Loading account information...',
+        'redirecting': 'Redirecting...'
+      },
+      ar: {
+        'personal_info': 'المعلومات الشخصية',
+        'first_name': 'الاسم الأول',
+        'last_name': 'اسم العائلة',
+        'email': 'البريد الإلكتروني',
+        'phone': 'الهاتف',
+        'phone_cannot_change': 'لا يمكن تغيير رقم الهاتف',
+        'update_profile': 'تحديث الملف الشخصي',
+        'updating': 'جارٍ التحديث...',
+        'loading_account': 'جاري تحميل معلومات الحساب...',
+        'redirecting': 'جاري التحويل...'
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   const [isUpdating, setIsUpdating] = useState(false);
 
   const { customer, updateCustomer, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -72,7 +101,7 @@ export default function AccountPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading account information...</p>
+          <p className="text-muted-foreground">{t('loading_account')}</p>
         </div>
       </div>
     );
@@ -81,10 +110,10 @@ export default function AccountPage() {
   // If not authenticated and not loading, redirect will happen in useEffect
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-zinc-900/60 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Redirecting...</p>
+          <p className="text-muted-foreground">{t('redirecting')}</p>
         </div>
       </div>
     );
@@ -92,31 +121,35 @@ export default function AccountPage() {
 
   return (
     <AccountLayout>
-      <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl shadow-xl p-6">
-        <h3 className="text-xl font-semibold text-foreground mb-6">Personal Information</h3>
-        <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="max-w-2xl mx-auto bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl p-8 mt-8">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-20 h-20 rounded-full bg-emerald-500 flex items-center justify-center text-white text-3xl font-extrabold mb-3 shadow-lg">
+            {customer?.first_name?.charAt(0)}{customer?.last_name?.charAt(0)}
+          </div>
+          <h3 className="text-2xl font-extrabold text-white mb-1">{t('personal_info')}</h3>
+          <span className="text-zinc-400">{customer?.email}</span>
+        </div>
+        <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                First Name
-              </label>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">{t('first_name')}</label>
               <input
                 type="text"
                 {...profileForm.register('firstName')}
-                className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-3 bg-zinc-800/60 text-white border-2 border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all"
+                dir={locale === 'ar' ? 'rtl' : 'ltr'}
               />
               {profileForm.formState.errors.firstName && (
                 <p className="text-destructive text-sm mt-1">{profileForm.formState.errors.firstName.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Last Name
-              </label>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">{t('last_name')}</label>
               <input
                 type="text"
                 {...profileForm.register('lastName')}
-                className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full px-4 py-3 bg-zinc-800/60 text-white border-2 border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all"
+                dir={locale === 'ar' ? 'rtl' : 'ltr'}
               />
               {profileForm.formState.errors.lastName && (
                 <p className="text-destructive text-sm mt-1">{profileForm.formState.errors.lastName.message}</p>
@@ -124,32 +157,30 @@ export default function AccountPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">{t('email')}</label>
             <input
               type="email"
               {...profileForm.register('email')}
-              className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="w-full px-4 py-3 bg-zinc-800/60 text-white border-2 border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all"
+              dir={locale === 'ar' ? 'rtl' : 'ltr'}
             />
             {profileForm.formState.errors.email && (
               <p className="text-destructive text-sm mt-1">{profileForm.formState.errors.email.message}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              Phone
-            </label>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">{t('phone')}</label>
             <input
               type="text"
               value={customer?.phone && customer?.country_code ? `+${customer.country_code}${customer.phone}` : ''}
               disabled
-              className="w-full px-3 py-2 border border-border rounded-md bg-muted text-muted-foreground"
+              className="w-full px-4 py-3 border-2 border-zinc-700 rounded-xl bg-zinc-800/40 text-zinc-400"
+              dir={locale === 'ar' ? 'rtl' : 'ltr'}
             />
-            <p className="text-sm text-muted-foreground mt-1">Phone number cannot be changed</p>
+            <p className="text-sm text-zinc-500 mt-1">{t('phone_cannot_change')}</p>
           </div>
-          <Button type="submit" disabled={isUpdating}>
-            {isUpdating ? 'Updating...' : 'Update Profile'}
+          <Button type="submit" disabled={isUpdating} className="w-full py-3 text-lg font-bold rounded-xl">
+            {isUpdating ? t('updating') : t('update_profile')}
           </Button>
         </form>
       </div>

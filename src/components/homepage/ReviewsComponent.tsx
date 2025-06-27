@@ -118,7 +118,7 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
           {/* Navigation Buttons */}
           {reviews.length > 1 && (
             <>
-              <Button
+              {/* <Button
                 variant="outline"
                 size="icon"
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
@@ -133,7 +133,7 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
                 onClick={nextSlide}
               >
                 <ChevronRight className="h-4 w-4" />
-              </Button>
+              </Button> */}
             </>
           )}
 
@@ -205,7 +205,7 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
           {/* View More Link */}
           <div className="text-center mt-8">
             <Link href="/reviews">
-              <Button variant="outline" className="px-6 py-2">
+              <Button variant="outline" className="px-6 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-semibold rounded-full transition-colors">
                 {locale === 'ar' ? 'عرض جميع المراجعات' : 'View All Reviews'}
               </Button>
             </Link>

@@ -85,7 +85,7 @@ export default function ClientProductsPage() {
       <Breadcrumbs items={breadcrumbItems} className="mb-6" />
       
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-4 sm:mb-0">
+        <h1 className="text-3xl font-bold text-primary mb-4 sm:mb-0">
           {locale === 'ar' ? 'جميع المنتجات' : 'All Products'}
         </h1>
 
@@ -96,7 +96,7 @@ export default function ClientProductsPage() {
             placeholder={locale === 'ar' ? 'البحث عن المنتجات...' : 'Search products...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64 px-4 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+            className="w-full sm:w-64 px-4 py-2 bg-zinc-800/60 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
           />
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function ClientProductsPage() {
               </div>
             )}
             {!hasNextPage && allProducts.length > 0 && (
-              <div className="flex items-center space-x-2 bg-card/30 backdrop-blur-md border border-border/50 rounded-xl px-6 py-3">
+              <div className="flex items-center space-x-2 backdrop-blur-md border border-border/50 rounded-xl px-6 py-3">
                 <span className="text-sm text-muted-foreground">
                   {locale === 'ar' ?
                     `عرض جميع ${allProducts.length} منتج` :

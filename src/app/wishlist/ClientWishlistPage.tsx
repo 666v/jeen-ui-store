@@ -10,12 +10,49 @@ import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import AuthModal from '@/components/auth/AuthModal';
-import { useTranslation } from '@/lib/useTranslation';
 import { useCurrency } from '@/lib/currency';
 import type { Product } from '@/lib/types';
+import { useLanguage } from '@/components/LanguageProvider';
 
 export default function WishlistPage() {
-  const { t } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'wishlist': 'Wishlist',
+        'item': 'item',
+        'items': 'items',
+        'clear_all': 'Clear All',
+        'wishlist_empty': 'Your wishlist is empty',
+        'start_adding_products': 'Start adding products to your wishlist!',
+        'continue_shopping': 'Continue Shopping',
+        'login_to_view_wishlist': 'Please login to view your wishlist',
+        'login': 'Login',
+        'item_removed_from_wishlist': 'Item removed from wishlist',
+        'error': 'Error',
+        'item_added_to_cart': 'Item added to cart',
+        'are_you_sure_clear_wishlist': 'Are you sure you want to clear your wishlist?',
+        'wishlist_cleared': 'Wishlist cleared'
+      },
+      ar: {
+        'wishlist': 'قائمة الرغبات',
+        'item': 'عنصر',
+        'items': 'عناصر',
+        'clear_all': 'مسح الكل',
+        'wishlist_empty': 'قائمة الرغبات فارغة',
+        'start_adding_products': 'ابدأ بإضافة المنتجات إلى قائمة رغباتك!',
+        'continue_shopping': 'تابع التسوق',
+        'login_to_view_wishlist': 'يرجى تسجيل الدخول لعرض قائمة الرغبات',
+        'login': 'تسجيل الدخول',
+        'item_removed_from_wishlist': 'تمت إزالة العنصر من قائمة الرغبات',
+        'error': 'خطأ',
+        'item_added_to_cart': 'تمت إضافة العنصر إلى السلة',
+        'are_you_sure_clear_wishlist': 'هل أنت متأكد أنك تريد مسح قائمة الرغبات؟',
+        'wishlist_cleared': 'تم مسح قائمة الرغبات'
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   const { formatPrice } = useCurrency();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { items, count, isLoading, fetchWishlist, removeFromWishlist, clearWishlist, hasFetched } = useWishlist();
@@ -108,45 +145,40 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <HeartSolidIcon className="h-8 w-8 text-red-500 mr-3" />
-            <h1 className="text-3xl font-bold text-foreground">
-              {t('wishlist')} ({count} {count === 1 ? t('item') : t('items')})
-            </h1>
+            <HeartSolidIcon className="h-8 w-8 text-emerald-400 mr-3" />
+            <h1 className="text-3xl font-extrabold text-white">{t('wishlist')} ({count} {count === 1 ? t('item') : t('items')})</h1>
           </div>
           {count > 0 && (
             <Button
               variant="outline"
               onClick={handleClearWishlist}
-              className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 bg-transparent border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="group flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-400 bg-transparent border border-red-400 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <TrashIcon className="h-4 w-4 transition-transform group-hover:scale-110" />
               <span>{t('clear_all')}</span>
             </Button>
           )}
         </div>
-
         {count === 0 ? (
           <div className="text-center py-16">
-            <HeartIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-medium text-foreground mb-2">{t('wishlist_empty')}</h2>
-            <p className="text-muted-foreground mb-6">{t('start_adding_products')}</p>
+            <HeartIcon className="h-16 w-16 text-zinc-700 mx-auto mb-4" />
+            <h2 className="text-xl font-medium text-white mb-2">{t('wishlist_empty')}</h2>
+            <p className="text-zinc-400 mb-6">{t('start_adding_products')}</p>
             <Link href="/products">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                {t('continue_shopping')}
-              </Button>
+              <Button className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-6 py-3 font-bold">{t('continue_shopping')}</Button>
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {items.map((product) => (
-              <div key={product.id} className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl shadow-xl overflow-hidden hover:shadow-2xl transition-all">
+              <div key={product.id} className="bg-zinc-900/60 border-2 border-zinc-800/50 rounded-2xl shadow-xl hover:shadow-emerald-500/10 transition-all overflow-hidden">
                 <div className="relative">
                   <Link href={`/products/${product.slug}`}>
-                    <div className="aspect-square bg-muted overflow-hidden">
+                    <div className="aspect-square bg-zinc-800 overflow-hidden">
                       {(product.image?.full_link || product.image?.url) ? (
                         <img
                           src={product.image.full_link || product.image.url}
@@ -154,7 +186,7 @@ export default function WishlistPage() {
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        <div className="w-full h-full flex items-center justify-center text-zinc-500">
                           📦
                         </div>
                       )}
@@ -162,55 +194,30 @@ export default function WishlistPage() {
                   </Link>
                   <button
                     onClick={() => handleRemoveFromWishlist(product.id)}
-                    className="absolute top-3 right-3 p-2 bg-card/30 backdrop-blur-md border border-border/50 rounded-full shadow-md hover:bg-muted/50 transition-colors"
+                    className="absolute top-2 right-2 bg-zinc-900/80 rounded-full p-2 text-red-400 hover:bg-red-500/10 hover:text-red-500 transition-all"
+                    aria-label="Remove from wishlist"
                   >
-                    <HeartSolidIcon className="h-5 w-5 text-red-500" />
+                    <TrashIcon className="h-5 w-5" />
                   </button>
                 </div>
-
-                <div className="p-4">
-                  <Link href={`/products/${product.slug}`}>
-                    <h3 className="font-medium text-foreground mb-2 hover:text-primary transition-colors line-clamp-2">
-                      {product.name}
-                    </h3>
+                <div className="p-4 flex flex-col gap-2">
+                  <Link href={`/products/${product.slug}`} className="font-bold text-white text-lg truncate hover:underline">
+                    {product.name}
                   </Link>
-
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-lg font-bold text-foreground">
-                      {product.price?.actual ? formatPrice(parseFloat(product.price.actual)) : 'N/A'}
-                    </span>
-                    <span className="text-sm text-muted-foreground capitalize">
-                      {product.type || 'Product'}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-400 font-bold text-lg">{formatPrice(product.price)}</span>
+                    {product.old_price && (
+                      <span className="text-zinc-400 line-through text-sm">{formatPrice(product.old_price)}</span>
+                    )}
                   </div>
-
-                  {product.categories && product.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {product.categories.slice(0, 2).map((category) => (
-                        <span
-                          key={category.id}
-                          className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                        >
-                          {category.name || 'Category'}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex space-x-2">
+                  <div className="flex gap-2 mt-2">
                     <Button
                       onClick={() => handleAddToCart(product)}
-                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                      size="sm"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-4 py-2 font-bold flex-1"
                     >
-                      <ShoppingCartIcon className="h-4 w-4 mr-2" />
-                      {t('add_to_cart')}
+                      <ShoppingCartIcon className="h-5 w-5 mr-1" />
+                      Add to Cart
                     </Button>
-                    <Link href={`/products/${product.slug}`}>
-                      <Button variant="outline" size="sm">
-                        {t('view')}
-                      </Button>
-                    </Link>
                   </div>
                 </div>
               </div>

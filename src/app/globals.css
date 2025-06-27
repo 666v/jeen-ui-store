@@ -68,6 +68,8 @@
   }
 }
 
+
+
 @layer base {
   * {
     @apply border-border;
@@ -299,3 +301,14 @@
     @apply text-zinc-400;
   }
 }
+
+.PhoneInputInput {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  font-size: 1rem !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+

@@ -12,8 +12,8 @@ import AuthModal from '@/components/auth/AuthModal';
 import CurrencySelector from '@/components/CurrencySelector';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import SearchModal from '@/components/ui/SearchModal';
-import { useTranslation } from '@/lib/useTranslation';
 import { useStore } from '@/components/StoreProvider';
+import { useLanguage } from '@/components/LanguageProvider';
 
 // Utility function to format phone number
 const formatPhoneNumber = (phone: string, countryCode: string = ''): string => {
@@ -41,7 +41,39 @@ const formatPhoneNumber = (phone: string, countryCode: string = ''): string => {
 };
 
 export default function Header() {
-  const { t } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'home': 'Home',
+        'products': 'Products',
+        'categories': 'Categories',
+        'cart': 'Cart',
+        'wishlist': 'Wishlist',
+        'account': 'Account',
+        'orders': 'Orders',
+        'login': 'Login',
+        'logout': 'Logout',
+        'addToCart': 'Add to Cart',
+        // ...add more as needed
+      },
+      ar: {
+        'home': 'الرئيسية',
+        'products': 'المنتجات',
+        'categories': 'الأقسام',
+        'cart': 'السلة',
+        'wishlist': 'قائمة الرغبات',
+        'account': 'الحساب',
+        'orders': 'الطلبات',
+        'login': 'تسجيل الدخول',
+        'logout': 'تسجيل الخروج',
+        'addToCart': 'أضف إلى السلة',
+        // ...add more as needed
+      }
+    };
+    // Always default to English value, never the key
+    return (translations[locale]?.[key] || translations['en'][key] || translations['en'][key]);
+  };
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -348,7 +380,7 @@ export default function Header() {
                           logout();
                           setIsUserMenuOpen(false);
                         }}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                            className="block w-full  px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
                       >
                         {t('logout')}
                       </button>
@@ -360,7 +392,7 @@ export default function Header() {
               <Button
                 variant="outline"
                 size="sm"
-                    className="hidden md:flex border-zinc-800/50 text-zinc-300 hover:text-white hover:bg-zinc-800/50"
+                    className="hidden md:flex border-zinc-800/50 text-zinc-300 hover:text-white bg-zinc-800/50 hover:bg-zinc-800/50"
                 onClick={() => setIsAuthModalOpen(true)}
               >
                 {t('login')}

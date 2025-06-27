@@ -7,7 +7,6 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { useInView } from 'react-intersection-observer';
-import { useTranslation } from '@/lib/useTranslation';
 import { useLanguage } from '@/components/LanguageProvider';
 import Link from 'next/link';
 
@@ -41,8 +40,32 @@ interface ReviewStats {
 }
 
 export default function ClientReviewsPage() {
-  const { t } = useTranslation();
   const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'customer_reviews': 'Customer Reviews',
+        'based_on_reviews': 'Based on {count} reviews',
+        'newest_first': 'Newest First',
+        'oldest_first': 'Oldest First',
+        'highest_rated': 'Highest Rated',
+        'lowest_rated': 'Lowest Rated',
+        'reviews': 'Reviews',
+        'error_loading_reviews': 'Error loading reviews',
+      },
+      ar: {
+        'customer_reviews': 'تقييمات العملاء',
+        'based_on_reviews': 'بناءً على {count} تقييم',
+        'newest_first': 'الأحدث أولاً',
+        'oldest_first': 'الأقدم أولاً',
+        'highest_rated': 'الأعلى تقييماً',
+        'lowest_rated': 'الأقل تقييماً',
+        'reviews': 'المراجعات',
+        'error_loading_reviews': 'حدث خطأ أثناء تحميل المراجعات',
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'highest' | 'lowest'>('newest');
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const { ref, inView } = useInView();
@@ -161,16 +184,16 @@ export default function ClientReviewsPage() {
                         <div
                           className="h-2 bg-yellow-400 rounded-full"
                           style={{
-                            width: `${
+                            width: `$${
                               stats.total_reviews > 0
-                                ? ((stats.rating_breakdown[rating] || 0) / stats.total_reviews) * 100
+                                ? ((stats.rating_breakdown[String(rating)] || 0) / stats.total_reviews) * 100
                                 : 0
                             }%`,
                           }}
                         />
                       </div>
                       <span className="text-muted-foreground">
-                        {stats.rating_breakdown[rating] || 0}
+                        {stats.rating_breakdown[String(rating)] || 0}
                       </span>
                     </div>
                   ))}

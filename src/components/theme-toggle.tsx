@@ -3,8 +3,6 @@
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useTranslation } from "@/lib/useTranslation"
-
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,10 +10,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useLanguage } from '@/components/LanguageProvider';
 
 export function ThemeToggle() {
   const { setTheme } = useTheme()
-  const { t } = useTranslation()
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'toggleTheme': 'Toggle theme',
+        'lightTheme': 'Light',
+        'darkTheme': 'Dark',
+        'systemTheme': 'System',
+      },
+      ar: {
+        'toggleTheme': 'تبديل النمط',
+        'lightTheme': 'فاتح',
+        'darkTheme': 'داكن',
+        'systemTheme': 'النظام',
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || translations['en'][key];
+  };
 
   return (
     <DropdownMenu>
@@ -27,15 +43,9 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="z-[100] min-w-[8rem]">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          {t('lightTheme')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          {t('darkTheme')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          {t('systemTheme')}
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("light")}>{t('lightTheme')}</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>{t('darkTheme')}</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>{t('systemTheme')}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

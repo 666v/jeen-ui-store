@@ -14,8 +14,10 @@ import { devLog, devWarn } from '@/lib/console-branding';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
-import { useTranslation } from '@/lib/useTranslation';
+import { useLanguage } from '@/components/LanguageProvider';
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
+import Image from 'next/image';
+import { useStore } from '@/components/StoreProvider';
 
 const otpSchema = z.object({
   otp: z.string().min(4, 'OTP is required'),
@@ -37,7 +39,38 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
-  const { t } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'login_or_register': 'Login or Register',
+        'send_verification_code': 'Send Verification Code',
+        'enter_verification_code': 'Enter Verification Code',
+        'complete_registration': 'Complete Registration',
+        'creating_account': 'Creating Account...',
+        'complete_registration_button': 'Complete Registration',
+        'verification_code_sent': 'Verification code sent',
+        'verifying': 'Verifying code...',
+      },
+      ar: {
+        'login_or_register': 'تسجيل الدخول أو إنشاء حساب',
+        'send_verification_code': 'إرسال رمز التحقق',
+        'enter_verification_code': 'أدخل رمز التحقق',
+        'complete_registration': 'إكمال التسجيل',
+        'creating_account': 'جاري إنشاء الحساب...',
+        'complete_registration_button': 'إكمال التسجيل',
+        'verification_code_sent': 'تم إرسال رمز التحقق',
+        'change_number': 'تغيير الرقم',
+        'enter_code_label': 'أدخل الرمز المرسل إلى رقمك',
+        'resend_code': 'إعادة إرسال الرمز',
+        'resend_code_cooldown': 'إعادة إرسال الرمز ({seconds}s)',
+        'complete_profile': 'أكمل ملفك الشخصي',
+        'verify_code': 'تحقق من الرمز',
+        'verifying': 'التحقق من الرمز...',
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || translations['en'][key];
+  };
   const [step, setStep] = useState<'phone' | 'otp' | 'registration'>('phone');
   const [isLoading, setIsLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -50,6 +83,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   const [otpSentTime, setOtpSentTime] = useState<number | null>(null);
   const [verificationCooldown, setVerificationCooldown] = useState(0);
   const { setAuth } = useAuth();
+  const { store } = useStore();
 
   const otpForm = useForm<OTPFormData>({
     resolver: zodResolver(otpSchema),
@@ -364,9 +398,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-gradient-to-br from-black/40 via-zinc-900/30 to-emerald-900/30 backdrop-blur-[6px]" />
         </Transition.Child>
-
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child
@@ -378,201 +411,210 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              {/* Force LTR direction for the entire modal */}
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-card/90 backdrop-blur-md border border-border/50 p-6 text-left align-middle shadow-xl transition-all" dir="ltr">
-                <div className="flex items-center justify-between mb-6">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-foreground">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-zinc-900/95 backdrop-blur-2xl border border-zinc-800/50 shadow-2xl shadow-black/30 p-0 text-left align-middle transition-all relative">
+                {/* Branding/logo section */}
+                <div className="flex flex-col items-center justify-center pt-8 pb-2 px-6 border-b border-zinc-800/30 bg-zinc-900/80">
+                  {store?.logo ? (
+                    <Image src={store.logo} alt={store.name || 'Store Logo'} width={48} height={48} className="rounded-full shadow-md mb-2" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-2xl mb-2 shadow-md">
+                      <span>{store?.name?.charAt(0) || 'S'}</span>
+                    </div>
+                  )}
+                  <span className="text-lg font-semibold text-white mb-1">{store?.name || 'Welcome'}</span>
+                </div>
+                {/* Modal header */}
+                <div className="flex items-center justify-between px-6 pt-4 pb-2">
+                  <Dialog.Title as="h3" className="text-lg font-bold leading-6 text-white">
                     {step === 'phone' && t('login_or_register')}
                     {step === 'otp' && t('enter_verification_code')}
                     {step === 'registration' && t('complete_registration')}
                   </Dialog.Title>
                   <button
                     onClick={handleClose}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-lg p-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                   >
                     <XMarkIcon className="h-6 w-6" />
                   </button>
                 </div>
-
-                {step === 'phone' && (
-                  <form onSubmit={handlePhoneSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        {t('phone_number')}
-                      </label>
-                      <PhoneInput
-                        international
-                        countryCallingCodeEditable={false}
-                        defaultCountry="SA"
-                        countries={[
-                          // GCC Countries (First)
-                          'SA', // Saudi Arabia
-                          'AE', // United Arab Emirates
-                          'KW', // Kuwait
-                          'QA', // Qatar
-                          'BH', // Bahrain
-                          'OM', // Oman
-                          // Other Arab Countries
-                          'EG', // Egypt
-                          'JO', // Jordan
-                          'LB', // Lebanon
-                          'IQ', // Iraq
-                          'YE', // Yemen
-                          'SY', // Syria
-                          'PS', // Palestine
-                          'MA', // Morocco
-                          'DZ', // Algeria
-                          'TN', // Tunisia
-                          'LY', // Libya
-                          'SD', // Sudan
-                          'MR', // Mauritania
-                          'DJ', // Djibouti
-                          'SO', // Somalia
-                          'KM', // Comoros
-                        ]}
-                        value={phoneValue}
-                        onChange={handlePhoneChange}
-                        className="phone-input w-full"
-                        style={{
-                          '--PhoneInputCountryFlag-height': '1.2em',
-                          '--PhoneInputCountrySelectArrow-color': 'currentColor',
-                          '--PhoneInput-color--focus': 'hsl(var(--ring))',
-                        } as React.CSSProperties}
-                        placeholder="Enter phone number"
-                      />
-                      {phoneError && (
-                        <p className="text-destructive text-sm mt-1">{phoneError}</p>
-                      )}
-                    </div>
-
-                    <Button type="submit" className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm" disabled={isLoading}>
-                      {isLoading ? t('sending') : t('send_verification_code')}
-                    </Button>
-                  </form>
-                )}
-
-                {step === 'otp' && (
-                  <div>
-                    <p className="text-muted-foreground text-center mb-6">
-                      {t('verification_code_sent')} <br />
-                      <span className="font-medium text-foreground">{phoneNumber || phoneValue || 'No phone number found'}</span>
-                    </p>
-                    <div className="space-y-6">
+                <div className="px-6 pb-8 pt-2">
+                  {step === 'phone' && (
+                    <form onSubmit={handlePhoneSubmit} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-4 text-center">
-                          {t('enter_code_label')}
+                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                          {t('phone_number')}
                         </label>
-                        <OTPInput
-                          length={4}
-                          value={otpValue}
-                          onChange={setOtpValue}
-                          onComplete={handleOtpComplete}
-                          autoFocus
-                          disabled={isLoading || verificationCooldown > 0}
-                          className="mb-4"
+                        <PhoneInput
+                          international
+                          countryCallingCodeEditable={false}
+                          defaultCountry="SA"
+                          countries={[
+                            // GCC Countries (First)
+                            'SA', // Saudi Arabia
+                            'AE', // United Arab Emirates
+                            'KW', // Kuwait
+                            'QA', // Qatar
+                            'BH', // Bahrain
+                            'OM', // Oman
+                            // Other Arab Countries
+                            'EG', // Egypt
+                            'JO', // Jordan
+                            'LB', // Lebanon
+                            'IQ', // Iraq
+                            'YE', // Yemen
+                            'SY', // Syria
+                            'PS', // Palestine
+                            'MA', // Morocco
+                            'DZ', // Algeria
+                            'TN', // Tunisia
+                            'LY', // Libya
+                            'SD', // Sudan
+                            'MR', // Mauritania
+                            'DJ', // Djibouti
+                            'SO', // Somalia
+                            'KM', // Comoros
+                          ]}
+                          value={phoneValue}
+                          onChange={handlePhoneChange}
+                          dir="ltr"
+                          className={`phone-input w-full rounded-2xl px-4 py-3 text-base bg-zinc-800/60 text-white border-2 border-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 shadow-sm placeholder:text-zinc-400 transition-all ltr:pl-4 ltr:pr-12 text-left focus:border-emerald-500 hover:border-emerald-400`}
+                          style={{
+                            '--PhoneInputCountryFlag-height': '1.5em',
+                            '--PhoneInputCountrySelectArrow-color': 'currentColor',
+                            '--PhoneInput-color--focus': 'hsl(var(--ring))',
+                            background: 'none',
+                            color: 'inherit',
+                            direction: 'ltr',
+                            textAlign: 'left',
+                          } as React.CSSProperties}
+                          placeholder={locale === 'ar' ? 'أدخل رقم الجوال' : 'Enter phone number'}
                         />
-                        {otpForm.formState.errors.otp && (
-                          <p className="text-destructive text-sm mt-2 text-center">{otpForm.formState.errors.otp.message}</p>
+                        {phoneError && (
+                          <p className="text-destructive text-sm mt-1 flex items-center gap-1"><span className="w-4 h-4 inline-block bg-destructive rounded-full"></span>{phoneError}</p>
                         )}
                       </div>
-
-                      <Button
-                        onClick={() => handleOtpComplete(otpValue)}
-                        className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm"
-                        disabled={isLoading || otpValue.length !== 4 || verificationCooldown > 0}
-                      >
-                        {isLoading ? t('verifying') : 
-                         verificationCooldown > 0 ? `${t('verify_code')} (${verificationCooldown}s)` :
-                         t('verify_code')}
-                      </Button>
-
-                      <div className="flex justify-between text-sm">
-                        <button
-                          type="button"
-                          onClick={goBackToPhone}
-                          className="text-muted-foreground hover:text-foreground font-medium transition-colors"
-                        >
-                          ← {t('change_number')}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={resendOTP}
-                          disabled={resendCooldown > 0}
-                          className={`font-medium transition-colors ${
-                            resendCooldown > 0 
-                              ? 'text-muted-foreground cursor-not-allowed' 
-                              : 'text-primary hover:text-primary/80 cursor-pointer'
-                          }`}
-                        >
-                          {resendCooldown > 0 
-                            ? `${t('resend_code')} (${resendCooldown}s)` 
-                            : t('resend_code')
-                          }
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {step === 'registration' && (
-                  <div>
-                    <p className="text-muted-foreground text-center mb-6">
-                      {t('complete_profile')}
-                    </p>
-                    <form onSubmit={registrationForm.handleSubmit(onRegistrationSubmit)} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          {t('email_address')}
-                        </label>
-                        <input
-                          type="email"
-                          {...registrationForm.register('email')}
-                          className="w-full px-3 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                          placeholder="your@email.com"
-                        />
-                        {registrationForm.formState.errors.email && (
-                          <p className="text-destructive text-sm mt-1">{registrationForm.formState.errors.email.message}</p>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-1">
-                            {t('first_name')}
-                          </label>
-                          <input
-                            type="text"
-                            {...registrationForm.register('name')}
-                            className="w-full px-3 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                            placeholder="John"
-                          />
-                          {registrationForm.formState.errors.name && (
-                            <p className="text-destructive text-sm mt-1">{registrationForm.formState.errors.name.message}</p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-1">
-                            {t('last_name')}
-                          </label>
-                          <input
-                            type="text"
-                            {...registrationForm.register('last_name')}
-                            className="w-full px-3 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                            placeholder="Doe"
-                          />
-                          {registrationForm.formState.errors.last_name && (
-                            <p className="text-destructive text-sm mt-1">{registrationForm.formState.errors.last_name.message}</p>
-                          )}
-                        </div>
-                      </div>
-
-                      <Button type="submit" className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm" disabled={isLoading}>
-                        {isLoading ? t('creating_account') : t('complete_registration_button')}
+                      <Button type="submit" className="w-full primary border border-zinc-800/50 text-white hover:text-white" disabled={isLoading}>
+                        {isLoading ? t('sending') : t('send_verification_code')}
                       </Button>
                     </form>
-                  </div>
-                )}
+                  )}
+                  {step === 'otp' && (
+                    <div>
+                      <p className="text-zinc-400 text-center mb-6">
+                        {t('verification_code_sent')} <br />
+                        <span className="font-medium text-white">{phoneNumber || phoneValue || 'No phone number found'}</span>
+                      </p>
+                      <div className="space-y-6">
+                        <div>
+                          <label className="block text-sm font-medium text-zinc-300 mb-4 text-center">
+                            {t('enter_code_label')}
+                          </label>
+                          <OTPInput
+                            length={4}
+                            value={otpValue}
+                            onChange={setOtpValue}
+                            onComplete={handleOtpComplete}
+                            autoFocus
+                            disabled={isLoading || verificationCooldown > 0}
+                            className="mb-4 rounded-lg px-3 py-2 bg-zinc-800/30 text-zinc-200 border border-zinc-800/50 focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-zinc-400 text-base"
+                          />
+                          {otpForm.formState.errors.otp && (
+                            <p className="text-destructive text-sm mt-2 text-center flex items-center gap-1"><span className="w-4 h-4 inline-block bg-destructive rounded-full"></span>{otpForm.formState.errors.otp.message}</p>
+                          )}
+                        </div>
+                        <Button
+                          onClick={() => handleOtpComplete(otpValue)}
+                          className="w-full primary border border-zinc-800/50 text-white hover:text-white"
+                          disabled={isLoading || otpValue.length !== 4 || verificationCooldown > 0}
+                        >
+                          {isLoading ? t('verifying') : 
+                            verificationCooldown > 0 ? `${t('verify_code')} (${verificationCooldown}s)` :
+                            t('verify_code')}
+                        </Button>
+                        <div className="flex justify-between text-sm">
+                          <button
+                            type="button"
+                            onClick={goBackToPhone}
+                            className="text-zinc-400 hover:text-white font-medium transition-colors"
+                          >
+                            ← {t('change_number')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={resendOTP}
+                            disabled={resendCooldown > 0}
+                            className={`font-medium transition-colors ${
+                              resendCooldown > 0 
+                                ? 'text-zinc-500 cursor-not-allowed' 
+                                : 'text-emerald-500 hover:text-emerald-400 cursor-pointer'
+                            }`}
+                          >
+                            {resendCooldown > 0 
+                              ? `${t('resend_code')} (${resendCooldown}s)` 
+                              : t('resend_code')
+                            }
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {step === 'registration' && (
+                    <div>
+                      <p className="text-zinc-400 text-center mb-6">
+                        {t('complete_profile')}
+                      </p>
+                      <form onSubmit={registrationForm.handleSubmit(onRegistrationSubmit)} className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-zinc-300 mb-1">
+                            {t('email_address')}
+                          </label>
+                          <input
+                            type="email"
+                            {...registrationForm.register('email')}
+                            className="w-full px-3 py-2 bg-zinc-800/30 text-zinc-200 border border-zinc-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-zinc-400 transition-all"
+                            placeholder="your@email.com"
+                          />
+                          {registrationForm.formState.errors.email && (
+                            <p className="text-destructive text-sm mt-1 flex items-center gap-1"><span className="w-4 h-4 inline-block bg-destructive rounded-full"></span>{registrationForm.formState.errors.email.message}</p>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-zinc-300 mb-1">
+                              {t('first_name')}
+                            </label>
+                            <input
+                              type="text"
+                              {...registrationForm.register('name')}
+                              className="w-full px-3 py-2 bg-zinc-800/30 text-zinc-200 border border-zinc-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-zinc-400 transition-all"
+                              placeholder="John"
+                            />
+                            {registrationForm.formState.errors.name && (
+                              <p className="text-destructive text-sm mt-1 flex items-center gap-1"><span className="w-4 h-4 inline-block bg-destructive rounded-full"></span>{registrationForm.formState.errors.name.message}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-zinc-300 mb-1">
+                              {t('last_name')}
+                            </label>
+                            <input
+                              type="text"
+                              {...registrationForm.register('last_name')}
+                              className="w-full px-3 py-2 bg-zinc-800/30 text-zinc-200 border border-zinc-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder:text-zinc-400 transition-all"
+                              placeholder="Doe"
+                            />
+                            {registrationForm.formState.errors.last_name && (
+                              <p className="text-destructive text-sm mt-1 flex items-center gap-1"><span className="w-4 h-4 inline-block bg-destructive rounded-full"></span>{registrationForm.formState.errors.last_name.message}</p>
+                            )}
+                          </div>
+                        </div>
+                        <Button type="submit" className="w-full bg-zinc-900/80 border border-zinc-800/50 text-zinc-300 hover:text-white hover:bg-zinc-800/50" disabled={isLoading}>
+                          {isLoading ? t('creating_account') : t('complete_registration_button')}
+                        </Button>
+                      </form>
+                    </div>
+                  )}
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>

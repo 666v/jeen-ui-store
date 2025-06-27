@@ -185,20 +185,20 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-foreground mb-8">
+      <h1 className="text-3xl font-extrabold text-white mb-8">
         {locale === 'ar' ?
           `سلة التسوق (${count} ${count === 1 ? 'عنصر' : 'عناصر'})` :
           `Shopping Cart (${count} ${count === 1 ? 'item' : 'items'})`
         }
       </h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl shadow-xl overflow-hidden">
+          <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl overflow-hidden">
             {Object.values(items).map((item) => (
-              <div key={item.id} className="flex items-center p-6 border-b border-border/30 last:border-b-0">
-                <div className="flex-shrink-0 w-20 h-20 bg-muted/50 backdrop-blur-sm rounded-lg overflow-hidden">
+              <div key={item.id} className="flex flex-col sm:flex-row items-center sm:items-stretch p-6 border-b border-zinc-800/40 last:border-b-0 bg-zinc-900/60 hover:shadow-emerald-500/10 transition-all gap-y-4 sm:gap-y-0 gap-x-6">
+                {/* Product Image */}
+                <div className="flex-shrink-0 w-20 h-20 bg-zinc-800/60 rounded-xl overflow-hidden flex items-center justify-center">
                   {(item.product?.image?.full_link || item.image?.full_link) ? (
                     <img
                       src={item.product?.image?.full_link || item.image?.full_link}
@@ -206,15 +206,15 @@ export default function CartPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                    <div className="w-full h-full flex items-center justify-center text-zinc-500 text-2xl">
                       📦
                     </div>
                   )}
                 </div>
-
-                <div className="ml-4 flex-1">
-                  <h3 className="text-lg font-medium text-foreground">{item.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
+                {/* Product Details */}
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <h3 className="text-lg font-bold text-white truncate">{item.name}</h3>
+                  <p className="text-sm text-zinc-400 mt-1 truncate">
                     {item.product.type} • ر.س{typeof item.unit_price === 'string' ? parseFloat(item.unit_price).toFixed(2) : item.unit_price?.toFixed(2) || '0.00'} {locale === 'ar' ? 'للقطعة' : 'each'}
                   </p>
 
@@ -227,7 +227,7 @@ export default function CartPage() {
                           (item.product?.fields && item.product.fields[Number(key)]?.name) || `Field ${Number(key) + 1}`;
 
                         return (
-                          <div key={index} className="text-sm text-muted-foreground">
+                          <div key={index} className="text-sm text-zinc-400">
                             <span className="font-medium">{fieldName}:{String(value)}</span>
                           </div>
                         );
@@ -239,7 +239,7 @@ export default function CartPage() {
                   {item.fields && item.fields.length > 0 && (
                     <div className="mt-2">
                       {item.fields.map((field, index) => (
-                        <div key={index} className="text-sm text-muted-foreground">
+                        <div key={index} className="text-sm text-zinc-400">
                           <span className="font-medium">{field.name}:</span> {field.value}
                           {field.price && <span className="ml-2">(+ر.س{field.price})</span>}
                         </div>
@@ -249,43 +249,43 @@ export default function CartPage() {
 
                   {/* Subscription Plan */}
                   {(item.subscription_plan || item.plan) && (
-                    <div className="mt-2 text-sm text-muted-foreground">
+                    <div className="mt-2 text-sm text-zinc-400">
                                             <span className="font-medium">{locale === 'ar' ? 'الخطة:' : 'Plan:'}</span> {(item.subscription_plan || item.plan)?.duration} {locale === 'ar' ? 'يوم' : 'days'} - {(item.subscription_plan || item.plan)?.formatted_price}
                     </div>
                   )}
 
                   {/* Notice */}
                   {item.notice && (
-                    <div className="mt-2 text-sm text-muted-foreground">
+                    <div className="mt-2 text-sm text-zinc-400">
                       <span className="font-medium">{locale === 'ar' ? 'ملاحظة:' : 'Note:'}</span> {item.notice}
                     </div>
                   )}
                 </div>
-
-                <div className="ml-4 flex items-center space-x-2">
+                {/* Quantity Controls */}
+                <div className="flex items-center gap-x-2 mt-4 sm:mt-0">
                   <button
                     onClick={() => handleUpdateQuantity(Number(item.product_id), '-')}
-                    className="p-2 rounded-lg hover:bg-muted/50 backdrop-blur-sm transition-all border border-border/30"
+                    className="p-2 rounded-xl bg-zinc-800/60 hover:bg-zinc-800/80 text-white border-2 border-zinc-700 transition-all"
                   >
                     <MinusIcon className="h-4 w-4" />
                   </button>
-                  <span className="w-8 text-center font-medium">{item.quantity}</span>
+                  <span className="w-8 text-center font-bold text-white">{item.quantity}</span>
                   <button
                     onClick={() => handleUpdateQuantity(Number(item.product_id), '+')}
-                    className="p-2 rounded-lg hover:bg-muted/50 backdrop-blur-sm transition-all border border-border/30"
+                    className="p-2 rounded-xl bg-zinc-800/60 hover:bg-zinc-800/80 text-white border-2 border-zinc-700 transition-all"
                   >
                     <PlusIcon className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleRemoveItem(Number(item.product_id))}
-                    className="p-2 rounded-lg hover:bg-destructive/10 backdrop-blur-sm text-destructive ml-4 transition-all border border-border/30"
+                    className="p-2 rounded-xl bg-zinc-900/80 hover:bg-red-500/10 text-red-400 border-2 border-zinc-700 ml-4 transition-all"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
                 </div>
-
-                <div className="ml-4 text-lg font-semibold text-foreground">
-                  ر.س{typeof item.total_price === 'string' ? parseFloat(item.total_price).toFixed(2) : item.total_price?.toFixed(2) || '0.00'}
+                {/* Item Price */}
+                <div className="text-lg font-bold text-emerald-400 ml-0 sm:ml-6 mt-4 sm:mt-0 whitespace-nowrap">
+                  {formatPrice(item.total_price)}
                 </div>
               </div>
             ))}
@@ -294,85 +294,82 @@ export default function CartPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl shadow-xl p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">
+          <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl p-8">
+            <h2 className="text-xl font-extrabold text-white mb-6">
               {locale === 'ar' ? 'ملخص الطلب' : 'Order Summary'}
             </h2>
 
             {/* Coupon */}
-            <div className="mb-4">
+            <div className="mb-6">
               {coupon ? (
-                                  <div className="bg-green-500/10 backdrop-blur-sm border border-green-500/20 p-3 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                        {locale === 'ar' ? 'تم تطبيق الكوبون' : 'Coupon Applied'}
-                      </span>
-                      <button
-                        onClick={handleRemoveCoupon}
-                        className="text-sm text-destructive hover:text-destructive/80 transition-colors"
-                      >
-                        {locale === 'ar' ? 'إزالة' : 'Remove'}
-                      </button>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-bold text-emerald-400">
+                      {locale === 'ar' ? 'تم تطبيق الكوبون' : 'Coupon Applied'}
+                    </span>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-sm text-red-400 hover:text-red-500 font-bold transition-colors"
+                    >
+                      {locale === 'ar' ? 'إزالة' : 'Remove'}
+                    </button>
+                  </div>
+                  <div className="text-sm text-emerald-400">
+                    <div className="font-bold">{coupon.code}</div>
+                    <div className="flex justify-between mt-1">
+                      <span>{locale === 'ar' ? 'نوع الخصم:' : 'Discount Type:'}</span>
+                      <span>{coupon.type === 'percent' ? (locale === 'ar' ? 'نسبة مئوية' : 'Percentage') : (locale === 'ar' ? 'مبلغ ثابت' : 'Fixed Amount')}</span>
                     </div>
-                                      <div className="text-sm text-green-700 dark:text-green-300">
-                      <div className="font-medium">{coupon.code}</div>
-                      <div className="flex justify-between mt-1">
-                        <span>{locale === 'ar' ? 'نوع الخصم:' : 'Discount Type:'}</span>
-                        <span>{coupon.type === 'percent' ?
-                          (locale === 'ar' ? 'نسبة مئوية' : 'Percentage') :
-                          (locale === 'ar' ? 'مبلغ ثابت' : 'Fixed Amount')
-                        }</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>{locale === 'ar' ? 'قيمة الخصم:' : 'Discount Value:'}</span>
-                        <span>{coupon.type === 'percent' ? `${coupon.value}%` : `ر.س${coupon.value}`}</span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span>{locale === 'ar' ? 'قيمة الخصم:' : 'Discount Value:'}</span>
+                      <span>{coupon.type === 'percent' ? `${coupon.value}%` : `ر.س${coupon.value}`}</span>
                     </div>
+                  </div>
                 </div>
               ) : (
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder={locale === 'ar' ? 'كود الكوبون' : 'Coupon Code'}
+                    placeholder={locale === 'ar' ? 'كوبون الخصم' : 'Coupon Code'}
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                    className="flex-1 px-4 py-2 bg-zinc-800/60 text-white border-2 border-zinc-700 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all"
+                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
                   />
-                  <Button onClick={handleApplyCoupon} variant="outline" className="backdrop-blur-sm">
+                  <Button onClick={handleApplyCoupon} variant="outline" className="rounded-l-lg bg-emerald-500 hover:bg-emerald-600 font-bold px-4 py-3">
                     {locale === 'ar' ? 'تطبيق' : 'Apply'}
                   </Button>
                 </div>
               )}
             </div>
 
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between text-muted-foreground">
+            <div className="space-y-4 mb-8">
+              <div className="flex justify-between text-zinc-400">
                 <span>{locale === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
                 <span>ر.س{subtotal.toFixed(2)}</span>
               </div>
               {discount_amount > 0 && (
-                <div className="flex justify-between text-green-600 dark:text-green-400">
+                <div className="flex justify-between text-emerald-400 font-bold">
                   <span>{locale === 'ar' ? 'الخصم' : 'Discount'}</span>
                   <span>-ر.س{discount_amount.toFixed(2)}</span>
                 </div>
               )}
-              <hr className="border-border/30" />
-              <div className="flex justify-between text-lg font-semibold text-foreground">
+              <hr className="border-zinc-800/40" />
+              <div className="flex justify-between text-lg font-extrabold text-white">
                 <span>{locale === 'ar' ? 'الإجمالي' : 'Total'}</span>
-                <span>ر.س{total.toFixed(2)}</span>
+                <span>{formatPrice(total)}</span>
               </div>
-              {/* Show selected currency equivalent if currency is not default */}
               {selectedCurrency && !selectedCurrency.is_default && (
-                <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                <div className="flex justify-between text-sm text-zinc-400 mt-1">
                   <span>≈</span>
-                  <span>{formatPrice(total)}</span>
+                  <span>{`ر.س${convertPrice(total, selectedCurrency.code).toFixed(2)}`}</span>
                 </div>
               )}
             </div>
 
             <Button
               onClick={handleCheckout}
-              className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl py-3 text-lg"
               size="lg"
               disabled={isCheckingOut}
             >
@@ -383,7 +380,7 @@ export default function CartPage() {
             </Button>
 
             {!isAuthenticated && (
-              <p className="text-sm text-muted-foreground text-center mt-4">
+              <p className="text-sm text-zinc-400 text-center mt-4">
                 {locale === 'ar' ? 'يرجى تسجيل الدخول لإكمال الشراء' : 'Please log in to complete your purchase'}
               </p>
             )}

@@ -2,12 +2,31 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { pagesApi } from '@/lib/store-api';
-import { useTranslation } from '@/lib/useTranslation';
 import Link from 'next/link';
 import { CalendarIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { useLanguage } from '@/components/LanguageProvider';
 
 export default function ClientPagesPage() {
-  const { t } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'pages': 'Pages',
+        'browse_all_pages': 'Browse all pages',
+        'read_more': 'Read More',
+        'no_pages_available': 'No pages available',
+        'check_back_later_for_new_pages': 'Check back later for new pages.'
+      },
+      ar: {
+        'pages': 'الصفحات',
+        'browse_all_pages': 'تصفح جميع الصفحات',
+        'read_more': 'اقرأ المزيد',
+        'no_pages_available': 'لا توجد صفحات متاحة',
+        'check_back_later_for_new_pages': 'تفقد مرة أخرى لاحقاً لصفحات جديدة.'
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   
   const { data: pages, isLoading } = useQuery({
     queryKey: ['pages'],

@@ -14,8 +14,8 @@ import {
   LockClosedIcon,
   UserIcon
 } from '@heroicons/react/24/outline';
-import { useTranslation } from '@/lib/useTranslation';
 import { useAuth } from '@/lib/auth';
+import { useLanguage } from '@/components/LanguageProvider';
 
 interface CourseDetailPageProps {
   params: Promise<{
@@ -25,7 +25,40 @@ interface CourseDetailPageProps {
 
 export default function CourseDetailPage({ params }: CourseDetailPageProps) {
   const { id } = use(params);
-  const { t } = useTranslation();
+  const { locale } = useLanguage();
+  const t = (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      en: {
+        'login_required': 'Login Required',
+        'please_login_course': 'Please log in to access course content.',
+        'loading_course': 'Loading course...',
+        'course_not_found': 'Course Not Found',
+        'course_not_found_desc': "This course doesn't exist or you don't have access to it.",
+        'back_to_courses': 'Back to Courses',
+        'progress': 'Progress',
+        'modules': 'Modules',
+        'duration': 'Duration',
+        'level': 'Level',
+        'overall_progress': 'Overall Progress',
+        // ...add more as needed
+      },
+      ar: {
+        'login_required': 'مطلوب تسجيل الدخول',
+        'please_login_course': 'يرجى تسجيل الدخول للوصول إلى محتوى الدورة.',
+        'loading_course': 'جاري تحميل الدورة...',
+        'course_not_found': 'الدورة غير موجودة',
+        'course_not_found_desc': 'هذه الدورة غير موجودة أو ليس لديك صلاحية للوصول إليها.',
+        'back_to_courses': 'العودة إلى الدورات',
+        'progress': 'التقدم',
+        'modules': 'الوحدات',
+        'duration': 'المدة',
+        'level': 'المستوى',
+        'overall_progress': 'التقدم الكلي',
+        // ...add more as needed
+      }
+    };
+    return translations[locale]?.[key] || translations['en'][key] || key;
+  };
   const { isAuthenticated } = useAuth();
   const [selectedModule, setSelectedModule] = useState<number | null>(null);
 
@@ -76,8 +109,8 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
         <div className="text-center">
           <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl p-12 shadow-xl max-w-md mx-auto">
             <BookOpenIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-foreground mb-4">Login Required</h1>
-            <p className="text-muted-foreground mb-8">Please log in to access course content.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-4">{t('login_required')}</h1>
+            <p className="text-muted-foreground mb-8">{t('please_login_course')}</p>
             <Link href={`/login?redirect=/courses/${id}`}>
               <Button className="w-full">Login</Button>
             </Link>
@@ -92,7 +125,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading course...</p>
+          <p className="text-muted-foreground">{t('loading_course')}</p>
         </div>
       </div>
     );
@@ -103,12 +136,12 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
           <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl p-12 shadow-xl max-w-md mx-auto">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Course Not Found</h1>
-            <p className="text-muted-foreground mb-8">This course doesn't exist or you don't have access to it.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-4">{t('course_not_found')}</h1>
+            <p className="text-muted-foreground mb-8">{t('course_not_found_desc')}</p>
             <Link href="/courses">
               <Button>
                 <ArrowLeftIcon className="h-4 w-4 mr-2" />
-                Back to Courses
+                {t('back_to_courses')}
               </Button>
             </Link>
           </div>
@@ -123,7 +156,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
       <div className="mb-8">
         <Link href="/courses" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 transition-colors">
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
-          Back to Courses
+          {t('back_to_courses')}
         </Link>
         
         <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl p-8 shadow-xl">
@@ -159,33 +192,33 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-muted/20 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-foreground">{course.progress || 0}%</div>
-                  <div className="text-sm text-muted-foreground">Progress</div>
+                  <div className="text-sm text-muted-foreground">{t('progress')}</div>
                 </div>
                 
                 {course.course?.total_modules && (
                   <div className="bg-muted/20 rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-foreground">{course.course.total_modules}</div>
-                    <div className="text-sm text-muted-foreground">Modules</div>
+                    <div className="text-sm text-muted-foreground">{t('modules')}</div>
                   </div>
                 )}
                 
                 {course.course?.estimated_duration && (
                   <div className="bg-muted/20 rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-foreground">{Math.round(course.course.estimated_duration / 60)}h</div>
-                    <div className="text-sm text-muted-foreground">Duration</div>
+                    <div className="text-sm text-muted-foreground">{t('duration')}</div>
                   </div>
                 )}
                 
                 <div className="bg-muted/20 rounded-lg p-4 text-center">
                   <div className="text-lg font-bold text-foreground">{course.course?.difficulty_level || 'Beginner'}</div>
-                  <div className="text-sm text-muted-foreground">Level</div>
+                  <div className="text-sm text-muted-foreground">{t('level')}</div>
                 </div>
               </div>
 
               {/* Progress Bar */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-foreground">Overall Progress</span>
+                  <span className="text-sm font-medium text-foreground">{t('overall_progress')}</span>
                   <span className="text-sm text-muted-foreground">{course.progress || 0}%</span>
                 </div>
                 <div className="w-full bg-muted/30 rounded-full h-3">
@@ -226,7 +259,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
         {/* Course Modules */}
         <div className="lg:col-span-2">
           <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl p-6 shadow-xl">
-            <h2 className="text-xl font-semibold text-foreground mb-6">Course Modules</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-6">{t('modules')}</h2>
             
             {/* Module List Placeholder */}
             <div className="space-y-4">
