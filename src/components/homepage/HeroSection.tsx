@@ -74,8 +74,8 @@ export default function HeroSection() {
       {/* Pill badge */}
       <div className="flex items-center justify-center mb-8">
         <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 text-emerald-400 text-xs font-semibold shadow">
-          <span className="bg-emerald-500 text-white rounded-full px-2 py-0.5 text-xs font-bold mr-2">{t('hero_badgeNew')}</span>
-          {t('hero_badgeAnnouncement')}
+          <span className="bg-emerald-500 text-white rounded-full px-2 py-0.5 text-xs font-bold mr-2">{t('hero.badgeNew')}</span>
+          {t('hero.badgeAnnouncement')}
           <svg className="w-4 h-4 ml-2 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>
@@ -84,20 +84,20 @@ export default function HeroSection() {
       
       {/* Headline */}
       <h1 className="text-center text-4xl sm:text-6xl font-extrabold text-white mb-6 leading-tight">
-        {t('hero_headline1')}<br className="hidden sm:block" />
-        {t('hero_headline2')} <span className="text-emerald-400">{t('hero_headlineHighlight')}</span>
+        {t('hero.headline1')}<br className="hidden sm:block" />
+        {t('hero.headline2')} <span className="text-emerald-400">{t('hero.headlineHighlight')}</span>
       </h1>
       
       {/* Subheading */}
       <p className="text-center text-lg sm:text-xl text-zinc-300 max-w-2xl mb-10">
-        {t('hero_subheading')}
+        {t('hero.subheading')}
       </p>
       
       {/* CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <Link href="/products">
           <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
-            {t('hero_ctaPrimary')}
+            {t('hero.ctaPrimary')}
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -105,7 +105,7 @@ export default function HeroSection() {
         </Link>
         <Link href="#learn-more">
           <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
-            {t('hero_ctaSecondary')}
+            {t('hero.ctaSecondary')}
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
