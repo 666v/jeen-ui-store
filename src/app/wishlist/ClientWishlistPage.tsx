@@ -206,8 +206,8 @@ export default function WishlistPage() {
                   </Link>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-400 font-bold text-lg">{formatPrice(product.price.actual)}</span>
-                    {product.old_price && (
-                      <span className="text-zinc-400 line-through text-sm">{formatPrice(product.old_price)}</span>
+                    {product.price.original && product.price.original !== product.price.actual && (
+                      <span className="text-zinc-400 line-through text-sm">{formatPrice(product.price.original)}</span>
                     )}
                   </div>
                   <div className="flex gap-2 mt-2">
