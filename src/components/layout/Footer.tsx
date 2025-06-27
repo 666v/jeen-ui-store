@@ -4,11 +4,19 @@ import Link from 'next/link';
 import { useTranslation } from '@/lib/useTranslation';
 import { useStore } from '@/components/StoreProvider';
 import { useLanguage } from '@/components/LanguageProvider';
+import { PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
 export default function Footer() {
   const { t } = useTranslation();
   const { locale } = useLanguage();
   const { store } = useStore();
+
+  // Top Contact Bar
+  const contactBarItems = [
+    { icon: PhoneIcon, title: 'رقم الجوال', value: '0564353553' },
+    { icon: PhoneIcon, title: 'الواتس آب', value: '0564353553' },
+    { icon: EnvelopeIcon, title: 'البريد الزاجل', value: 'digitalCards@g.com' }
+  ];
 
   // Social media icons
   const getSocialIcon = (platform: string) => {
@@ -140,212 +148,233 @@ export default function Footer() {
   );
 
   return (
-    <footer className="bg-muted/30 backdrop-blur-md border-t border-border/50 pb-20 md:pb-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Store Info Section */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center mb-4">
-              {(store as any)?.logo ? (
-                <img
-                  src={(store as any).logo}
-                  alt={(store as any).name}
-                  className="h-8 w-auto mr-3"
-                />
-              ) : null}
-              <h3 className="text-lg font-semibold text-foreground">{(store as any)?.name || (locale === 'ar' ? 'عن المتجر' : 'About Store')}</h3>
-            </div>
-            <p className="text-muted-foreground mb-4">
-              {(store as any)?.description || (locale === 'ar' ? 'اكتشف منتجاتنا المميزة' : 'Discover our featured products')}
-            </p>
-
-            {/* Social Media Links */}
-            {(store as any)?.social_links && Array.isArray((store as any).social_links) && (store as any).social_links.length > 0 && (
-              <div className="flex space-x-4 mb-4">
-                {(store as any).social_links.map((social: any, index: number) => {
-                  if (!social.link || !social.method) return null;
-                  return (
-                    <a
-                      key={`${social.method}-${index}`}
-                      href={social.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      title={`Follow us on ${social.method.charAt(0).toUpperCase() + social.method.slice(1)}`}
-                    >
-                      <span className="sr-only">{social.method}</span>
-                      {getSocialIcon(social.method)}
-                    </a>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Contact Info */}
-            {(store as any)?.contact_info && (
-              <div className="space-y-2">
-                {(store as any).contact_info.email && (
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">{locale === 'ar' ? 'البريد الإلكتروني:' : 'Email:'}</span> {(store as any).contact_info.email}
-                  </p>
-                )}
-                {(store as any).contact_info.phone && (
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">{locale === 'ar' ? 'الهاتف:' : 'Phone:'}</span> {(store as any).contact_info.phone}
-                  </p>
-                )}
-                {(store as any).contact_info.address && (
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">{locale === 'ar' ? 'العنوان:' : 'Address:'}</span> {(store as any).contact_info.address}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase mb-4">
-              {locale === 'ar' ? 'المتجر' : 'Store'}
-            </h3>
-            <ul className="space-y-4">
-              <li>
-                <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {locale === 'ar' ? 'الرئيسية' : 'Home'}
-                </Link>
-              </li>
-              <li>
-                <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {locale === 'ar' ? 'جميع المنتجات' : 'All Products'}
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t('categories')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/featured" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {locale === 'ar' ? 'المنتجات المميزة' : 'Featured Products'}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Store Pages */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase mb-4">
-              {locale === 'ar' ? 'الصفحات' : 'Pages'}
-            </h3>
-            <ul className="space-y-4">
-              {(store as any)?.pages && (store as any).pages.length > 0 ? (
-                // Show custom store pages if available
-                (store as any).pages.slice(0, 4).map((page: any) => (
-                  <li key={page.id}>
-                    <Link
-                      href={`/pages/${page.url}`}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {page.title}
-                    </Link>
-                  </li>
-                ))
-              ) : (
-                // Fallback to default customer service links
-                <>
-                  <li>
-                    <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                      {locale === 'ar' ? 'تواصل معنا' : 'Contact Us'}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                      {locale === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/shipping" className="text-muted-foreground hover:text-foreground transition-colors">
-                      {locale === 'ar' ? 'التسليم الفوري' : 'Instant Delivery'}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/returns" className="text-muted-foreground hover:text-foreground transition-colors">
-                      {locale === 'ar' ? 'الدعم 24/7' : 'Support 24/7'}
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-8 pt-8 border-t border-border/30">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-muted-foreground text-sm">
-              © {new Date().getFullYear()} {(store as any)?.name || 'Digital Store'}. {locale === 'ar' ? 'جميع الحقوق محفوظة' : 'All rights reserved'}.
-            </p>
-
-            {/* Payment Methods & Trust Badges */}
-            <div className="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0">
-              {/* SBC Badge */}
-              {(store as any)?.sbc_id && (
-                <a
-                  href={`https://eauthenticate.saudibusiness.gov.sa/certificate-details/${(store as any).sbc_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-                >
-                  {getSBCIcon()}
-                  <div className="text-xs">
-                    <div className="font-semibold text-green-700 dark:text-green-300">
-                      {locale === 'ar' ? 'موثق من السجل التجاري' : 'SBC Verified'}
-                    </div>
-                    <div className="text-green-600 dark:text-green-400 font-mono">{(store as any).sbc_id}</div>
-                  </div>
-                </a>
-              )}
-
-              {/* Payment Methods */}
-              {(store as any)?.payment_methods && (store as any).payment_methods.filter((pm: any) => pm.is_enabled).length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
-                  {(store as any).payment_methods.filter((pm: any) => pm.is_enabled).map((method: any) => {
-                    const methodName = method.method;
-
-                    if (methodName === 'card') {
-                      // Show multiple card icons for card payment
-                      return [
-                        <div key="visa" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                          {getPaymentIcon('visa')}
-                        </div>,
-                        <div key="mastercard" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                          {getPaymentIcon('mastercard')}
-                        </div>,
-                        <div key="applepay" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                          {getPaymentIcon('applepay')}
-                        </div>,
-                        <div key="stcpay" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                          {getPaymentIcon('stcpay')}
-                        </div>
-                      ];
-                    } else {
-                      // Show single icon for other payment methods
-                      return (
-                        <div
-                          key={method.id}
-                          className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700"
-                          title={method.nickname || methodName}
-                        >
-                          {getPaymentIcon(methodName)}
-                        </div>
-                      );
-                    }
-                  }).flat()}
+    <>
+      {/* Top Contact Bar */}
+      <div className="bg-zinc-900/60">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-right">
+            {contactBarItems.map((item, index) => (
+              <div key={index} className="flex items-center justify-center md:justify-start gap-3">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                  <item.icon className="w-5 h-5" />
                 </div>
-              )}
-            </div>
+                <div>
+                  <p className="text-sm text-zinc-400">{item.title}</p>
+                  <p className="text-white font-medium" dir="ltr">{item.value}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </footer>
+      {/* Existing Footer Content */}
+      <footer className=" backdrop-blur-md border-t border-border/50 pb-20 md:pb-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Store Info Section */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center mb-4">
+                {(store as any)?.logo ? (
+                  <img
+                    src={(store as any).logo}
+                    alt={(store as any).name}
+                    className="h-8 w-auto mr-3"
+                  />
+                ) : null}
+                <h3 className="text-lg font-semibold text-foreground">{(store as any)?.name || (locale === 'ar' ? 'عن المتجر' : 'About Store')}</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                {(store as any)?.description || (locale === 'ar' ? 'اكتشف منتجاتنا المميزة' : 'Discover our featured products')}
+              </p>
+
+              {/* Social Media Links */}
+              {(store as any)?.social_links && Array.isArray((store as any).social_links) && (store as any).social_links.length > 0 && (
+                <div className="flex space-x-4 mb-4">
+                  {(store as any).social_links.map((social: any, index: number) => {
+                    if (!social.link || !social.method) return null;
+                    return (
+                      <a
+                        key={`${social.method}-${index}`}
+                        href={social.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        title={`Follow us on ${social.method.charAt(0).toUpperCase() + social.method.slice(1)}`}
+                      >
+                        <span className="sr-only">{social.method}</span>
+                        {getSocialIcon(social.method)}
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Contact Info */}
+              {(store as any)?.contact_info && (
+                <div className="space-y-2">
+                  {(store as any).contact_info.email && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">{locale === 'ar' ? 'البريد الإلكتروني:' : 'Email:'}</span> {(store as any).contact_info.email}
+                    </p>
+                  )}
+                  {(store as any).contact_info.phone && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">{locale === 'ar' ? 'الهاتف:' : 'Phone:'}</span> {(store as any).contact_info.phone}
+                    </p>
+                  )}
+                  {(store as any).contact_info.address && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">{locale === 'ar' ? 'العنوان:' : 'Address:'}</span> {(store as any).contact_info.address}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase mb-4">
+                {locale === 'ar' ? 'المتجر' : 'Store'}
+              </h3>
+              <ul className="space-y-4">
+                <li>
+                  <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                    {locale === 'ar' ? 'الرئيسية' : 'Home'}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors">
+                    {locale === 'ar' ? 'جميع المنتجات' : 'All Products'}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/categories" className="text-muted-foreground hover:text-foreground transition-colors">
+                    {t('categories')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/featured" className="text-muted-foreground hover:text-foreground transition-colors">
+                    {locale === 'ar' ? 'المنتجات المميزة' : 'Featured Products'}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Store Pages */}
+            <div>
+              <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase mb-4">
+                {locale === 'ar' ? 'الصفحات' : 'Pages'}
+              </h3>
+              <ul className="space-y-4">
+                {(store as any)?.pages && (store as any).pages.length > 0 ? (
+                  // Show custom store pages if available
+                  (store as any).pages.slice(0, 4).map((page: any) => (
+                    <li key={page.id}>
+                      <Link
+                        href={`/pages/${page.url}`}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {page.title}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  // Fallback to default customer service links
+                  <>
+                    <li>
+                      <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                        {locale === 'ar' ? 'تواصل معنا' : 'Contact Us'}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                        {locale === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/shipping" className="text-muted-foreground hover:text-foreground transition-colors">
+                        {locale === 'ar' ? 'التسليم الفوري' : 'Instant Delivery'}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/returns" className="text-muted-foreground hover:text-foreground transition-colors">
+                        {locale === 'ar' ? 'الدعم 24/7' : 'Support 24/7'}
+                      </Link>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-8 border-t border-border/30">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-muted-foreground text-sm">
+                © {new Date().getFullYear()} {(store as any)?.name || 'Digital Store'}. {locale === 'ar' ? 'جميع الحقوق محفوظة' : 'All rights reserved'}.
+              </p>
+
+              {/* Payment Methods & Trust Badges */}
+              <div className="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0">
+                {/* SBC Badge */}
+                {(store as any)?.sbc_id && (
+                  <a
+                    href={`https://eauthenticate.saudibusiness.gov.sa/certificate-details/${(store as any).sbc_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+                  >
+                    {getSBCIcon()}
+                    <div className="text-xs">
+                      <div className="font-semibold text-green-700 dark:text-green-300">
+                        {locale === 'ar' ? 'موثق من السجل التجاري' : 'SBC Verified'}
+                      </div>
+                      <div className="text-green-600 dark:text-green-400 font-mono">{(store as any).sbc_id}</div>
+                    </div>
+                  </a>
+                )}
+
+                {/* Payment Methods */}
+                {(store as any)?.payment_methods && (store as any).payment_methods.filter((pm: any) => pm.is_enabled).length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {(store as any).payment_methods.filter((pm: any) => pm.is_enabled).map((method: any) => {
+                      const methodName = method.method;
+
+                      if (methodName === 'card') {
+                        // Show multiple card icons for card payment
+                        return [
+                          <div key="visa" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                            {getPaymentIcon('visa')}
+                          </div>,
+                          <div key="mastercard" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                            {getPaymentIcon('mastercard')}
+                          </div>,
+                          <div key="applepay" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                            {getPaymentIcon('applepay')}
+                          </div>,
+                          <div key="stcpay" className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                            {getPaymentIcon('stcpay')}
+                          </div>
+                        ];
+                      } else {
+                        // Show single icon for other payment methods
+                        return (
+                          <div
+                            key={method.id}
+                            className="p-1 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700"
+                            title={method.nickname || methodName}
+                          >
+                            {getPaymentIcon(methodName)}
+                          </div>
+                        );
+                      }
+                    }).flat()}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

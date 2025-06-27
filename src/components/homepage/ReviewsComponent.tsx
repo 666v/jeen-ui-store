@@ -27,6 +27,7 @@ interface ReviewsComponentProps {
 
 export default function ReviewsComponent({ className = '' }: ReviewsComponentProps) {
   const { locale } = useLanguage();
+  const isRTL = locale === 'ar';
   const [currentSlide, setCurrentSlide] = useState(0);
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
@@ -47,7 +48,7 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-background">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="h-8 bg-muted animate-pulse rounded mb-4"></div>
@@ -102,13 +103,13 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
   };
 
   return (
-    <section className={`py-16 bg-background ${className}`}>
+    <section className={`py-16 ${className}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground mb-4">
+          <h2 className="text-3xl font-bold tracking-tight text-white mb-4">
             ما يقوله عملاؤنا
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-white/70 max-w-2xl mx-auto">
             اكتشف تجارب العملاء الحقيقية مع منتجاتنا وخدماتنا
           </p>
         </div>
@@ -139,7 +140,7 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
           {/* Reviews Container */}
           <div className="overflow-hidden" ref={containerRef}>
             <motion.div
-              className="flex"
+              className={`flex ${isRTL ? 'flex-row-reverse' : ''}`}
               style={{
                 transform: `translateX(-${currentSlide * 100}%)`,
               }}
@@ -149,31 +150,36 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
                 <div key={review.id} className="w-full flex-shrink-0">
                   <div className="max-w-2xl mx-auto px-4">
                     <motion.div
-                      className="bg-card p-8 rounded-lg border shadow-sm hover:shadow-md transition-shadow text-center"
-                      whileHover={{ scale: 1.02 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      className="bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl p-8 sm:p-10 text-center transition-all duration-300 hover:scale-[1.025] hover:shadow-2xl relative overflow-hidden flex flex-col items-center"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     >
-                      <div className="flex items-center justify-center space-x-4 mb-6">
-                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-primary font-semibold text-xl">
-                            {(review as any).reviewer?.name?.charAt(0)?.toUpperCase() || 'U'}
-                          </span>
-                        </div>
-                        <div className="text-left">
-                          <h4 className="font-semibold text-foreground text-lg">
-                            {(review as any).reviewer?.name || 'عميل'}
-                          </h4>
-                          <div className="flex items-center space-x-1 justify-center">
-                            {renderStars(review.rating)}
-                          </div>
-                        </div>
+                      {/* Quote Icon */}
+                      <svg className={`absolute top-6 ${isRTL ? 'right-6' : 'left-6'} w-10 h-10 text-primary/30 opacity-30`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h.01M15 7h.01M7 11h10M7 15h6" /></svg>
+                      {/* Avatar */}
+                      <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-3xl font-bold text-primary shadow-lg border-2 border-primary/30 mb-4">
+                        {(review as any).reviewer?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </div>
-                      <p className="text-muted-foreground mb-4 leading-relaxed text-lg">
-                        "{review.comment}"
+                      {/* Name */}
+                      <span className="text-lg sm:text-xl font-bold text-white mb-2">{(review as any).reviewer?.name || 'عميل'}</span>
+                      {/* Rating */}
+                      <div className={`flex items-center justify-center gap-1 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        {renderStars(review.rating)}
+                      </div>
+                      {/* Product badge if available */}
+                      {review.product_name && (
+                        <span className="inline-block bg-primary/20 text-primary text-xs font-semibold rounded-full px-3 py-1 mb-4">{review.product_name}</span>
+                      )}
+                      {/* Review Text */}
+                      <p className="text-white/90 text-lg sm:text-xl font-medium leading-relaxed mb-6 relative z-10">
+                        <span className={`text-primary/80 text-2xl font-bold ${isRTL ? 'ml-2' : 'mr-2'}`}>“</span>
+                        {review.comment}
+                        <span className={`text-primary/80 text-2xl font-bold ${isRTL ? 'mr-2' : 'ml-2'}`}>”</span>
                       </p>
-                      <time className="text-sm text-muted-foreground">
+                      {/* Date */}
+                      <span className="inline-block bg-white/20 text-white/70 text-xs font-semibold rounded-full px-4 py-1 mt-auto">
                         {new Date(review.created_at).toLocaleDateString('ar-SA')}
-                      </time>
+                      </span>
                     </motion.div>
                   </div>
                 </div>

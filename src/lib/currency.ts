@@ -49,7 +49,7 @@ export const useCurrency = create<CurrencyStore>()(
         try {
           const response = await storeApi.getCurrencies() as any;
 
-                    // Defensive check for response
+          // Defensive check for response
           if (!response) {
             set({ availableCurrencies: [] });
             return;
@@ -57,11 +57,24 @@ export const useCurrency = create<CurrencyStore>()(
 
           // Handle different response formats with better validation
           // The backend now returns currencies directly in response.data field (from sendResponse)
-          const currencies = Array.isArray(response)
+          let currencies = Array.isArray(response)
             ? response
             : (response?.data && Array.isArray(response.data)
                 ? response.data
                 : (Array.isArray(response) ? response : []));
+
+          // Always ensure SAR is present
+          const sarCurrency = {
+            id: 1,
+            code: 'ر.س',
+            symbol: 'ر.س',
+            name: 'ريال سعودي',
+            rate: 1.0,
+            is_default: true
+          };
+          if (!currencies.some((c: any) => c.code === 'ر.س' || c.code === 'SAR')) {
+            currencies = [sarCurrency, ...currencies];
+          }
 
           if (Array.isArray(currencies) && currencies.length > 0) {
             // Validate that currencies have required properties
@@ -77,38 +90,20 @@ export const useCurrency = create<CurrencyStore>()(
                 selectedCurrency: get().selectedCurrency || defaultCurrency
               });
             } else {
-              // If no valid currencies, create SAR fallback
-              const fallbackCurrency = {
-                id: 1,
-                code: 'ر.س',
-                symbol: 'ر.س',
-                name: 'ريال سعودي',
-                rate: 1.0,
-                is_default: true
-              };
               set({
-                availableCurrencies: [fallbackCurrency],
-                selectedCurrency: get().selectedCurrency || fallbackCurrency
+                availableCurrencies: [sarCurrency],
+                selectedCurrency: get().selectedCurrency || sarCurrency
               });
             }
           } else {
-            // If no currencies from API, create SAR fallback
-            const fallbackCurrency = {
-              id: 1,
-              code: 'ر.س',
-              symbol: 'ر.س',
-              name: 'ريال سعودي',
-              rate: 1.0,
-              is_default: true
-            };
             set({
-              availableCurrencies: [fallbackCurrency],
-              selectedCurrency: get().selectedCurrency || fallbackCurrency
+              availableCurrencies: [sarCurrency],
+              selectedCurrency: get().selectedCurrency || sarCurrency
             });
           }
         } catch (error) {
           // Create SAR fallback on error
-          const fallbackCurrency = {
+          const sarCurrency = {
             id: 1,
             code: 'ر.س',
             symbol: 'ر.س',
@@ -117,8 +112,8 @@ export const useCurrency = create<CurrencyStore>()(
             is_default: true
           };
           set({
-            availableCurrencies: [fallbackCurrency],
-            selectedCurrency: get().selectedCurrency || fallbackCurrency
+            availableCurrencies: [sarCurrency],
+            selectedCurrency: get().selectedCurrency || sarCurrency
           });
         } finally {
           set({ isLoading: false });

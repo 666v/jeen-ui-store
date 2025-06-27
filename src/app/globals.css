@@ -5,15 +5,20 @@
 /* Font families */
 :root {
   --font-inter: 'Inter', sans-serif;
-  --font-noto-arabic: 'Noto Sans Arabic', sans-serif;
+  --font-tajawal: 'Tajawal', sans-serif;
+  --color-secondary: rgb(63 63 70);
 }
 
 .font-inter {
   font-family: var(--font-inter);
 }
 
+.font-tajawal {
+  font-family: var(--font-tajawal);
+}
+
 .font-arabic {
-  font-family: var(--font-noto-arabic);
+  font-family: var(--font-tajawal);
 }
 
 @layer base {
@@ -24,8 +29,8 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
@@ -36,30 +41,30 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 160 84% 39%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 160 84% 39%;
   }
 }
 
@@ -68,7 +73,67 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-br from-zinc-950 to-zinc-900 text-white;
+    font-family: var(--font-tajawal);
+    line-height: 1.6;
+  }
+  
+  /* RTL Support */
+  [dir="rtl"] body {
+    font-family: var(--font-tajawal);
+  }
+  
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-white font-semibold;
+    line-height: 1.2;
+  }
+  
+  h1 {
+    @apply text-6xl;
+  }
+  
+  h2 {
+    @apply text-5xl;
+  }
+  
+  h3 {
+    @apply text-4xl;
+  }
+  
+  h4 {
+    @apply text-3xl;
+  }
+  
+  h5 {
+    @apply text-2xl;
+  }
+  
+  h6 {
+    @apply text-xl;
+  }
+  
+  p {
+    @apply text-zinc-300;
+    line-height: 1.7;
+  }
+  
+  /* Card backgrounds */
+  .card {
+    @apply bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50;
+  }
+  
+  /* Text colors */
+  .text-primary {
+    @apply text-emerald-500;
+  }
+  
+  .text-secondary {
+    @apply text-zinc-300;
+  }
+  
+  .text-muted {
+    @apply text-zinc-400;
   }
 }
 
@@ -160,13 +225,13 @@
   /* Backdrop blur enhancements */
   .backdrop-blur-glass {
     backdrop-filter: blur(12px) saturate(180%);
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(24, 24, 27, 0.8);
+    border: 1px solid rgba(63, 63, 70, 0.5);
   }
 
   .dark .backdrop-blur-glass {
-    background-color: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(24, 24, 27, 0.8);
+    border: 1px solid rgba(63, 63, 70, 0.5);
   }
 
   /* Mobile-first optimizations */
@@ -178,7 +243,7 @@
       right: 0;
       z-index: 50;
       backdrop-filter: blur(12px) saturate(180%);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(63, 63, 70, 0.5);
     }
 
     .mobile-optimized {
@@ -199,43 +264,38 @@
 
   /* Phone Input Styles */
   .phone-input .PhoneInputInput {
-    @apply w-full px-3 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all text-foreground;
-    font-family: inherit;
+    @apply bg-zinc-900/80 border border-zinc-800/50 text-white placeholder-zinc-400;
   }
 
   .phone-input .PhoneInputCountrySelect {
-    @apply bg-background/50 backdrop-blur-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all text-foreground;
-    padding: 0.5rem;
-    margin-right: 0.5rem;
+    @apply bg-zinc-900/80 border border-zinc-800/50 text-white;
   }
 
   .phone-input .PhoneInputCountrySelectArrow {
-    @apply text-muted-foreground;
+    @apply text-zinc-400;
   }
 
   .phone-input .PhoneInputCountry {
-    @apply flex items-center gap-2;
+    @apply bg-zinc-900/80 border border-zinc-800/50;
   }
 
   .phone-input .PhoneInputCountryIcon {
-    @apply w-5 h-5;
+    @apply bg-zinc-900/80 border border-zinc-800/50;
   }
 
-  /* Make phone input container flex */
   .phone-input {
-    @apply flex items-center gap-2;
+    @apply bg-zinc-900/80 border border-zinc-800/50 text-white;
   }
 
-  /* Dark mode styles for phone input */
   .dark .phone-input .PhoneInputInput {
-    @apply bg-background/50 border-border text-foreground;
+    @apply bg-zinc-900/80 border border-zinc-800/50 text-white;
   }
 
   .dark .phone-input .PhoneInputCountrySelect {
-    @apply bg-background/50 border-border text-foreground;
+    @apply bg-zinc-900/80 border border-zinc-800/50 text-white;
   }
 
   .dark .phone-input .PhoneInputCountrySelectArrow {
-    @apply text-muted-foreground;
+    @apply text-zinc-400;
   }
 }

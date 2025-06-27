@@ -25,8 +25,8 @@ function updateDocumentAttributes(locale: string) {
 
   document.documentElement.lang = locale;
   document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
-  document.body.className = document.body.className.replace(/(font-inter|font-arabic)/g, '');
-  document.body.classList.add(locale === 'ar' ? 'font-arabic' : 'font-inter');
+  document.body.className = document.body.className.replace(/(font-inter|font-arabic|font-tajawal)/g, '');
+  document.body.classList.add('font-tajawal'); // Always use Tajawal font
 }
 
 export function LanguageProvider({ children, initialLanguage }: LanguageProviderProps) {

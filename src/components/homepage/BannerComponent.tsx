@@ -73,7 +73,7 @@ export default function BannerComponent({ component }: BannerComponentProps) {
 
   if (isCarousel) {
     return (
-      <section className="py-12 bg-gradient-to-br from-background to-muted/10 relative overflow-hidden">
+      <section className="py-12 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
@@ -136,7 +136,7 @@ export default function BannerComponent({ component }: BannerComponentProps) {
 
   // Single banner
   return (
-    <section className="py-12 bg-gradient-to-br from-background to-muted/5 relative overflow-hidden">
+    <section className="py-12 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 

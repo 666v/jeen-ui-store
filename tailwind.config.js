@@ -19,7 +19,8 @@ module.exports = {
     extend: {
       fontFamily: {
         inter: ['var(--font-inter)', 'Inter', 'sans-serif'],
-        arabic: ['var(--font-noto-arabic)', 'Noto Sans Arabic', 'sans-serif'],
+        tajawal: ['var(--font-tajawal)', 'Tajawal', 'sans-serif'],
+        arabic: ['var(--font-tajawal)', 'Tajawal', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -28,8 +29,19 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          200: '#a7f3d0',
+          300: '#6ee7b7',
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065f46',
+          900: '#064e3b',
+          950: '#022c22',
+          DEFAULT: '#10b981',
+          foreground: '#ffffff',
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Noto_Sans_Arabic } from "next/font/google";
+import { Tajawal } from "next/font/google";
 import "./globals.css";
 import { Providers } from './providers';
 import Header from '@/components/layout/Header';
@@ -16,9 +16,10 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const notoSansArabic = Noto_Sans_Arabic({
-  subsets: ['arabic'],
-  variable: '--font-noto-sans-arabic',
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '500', '700', '800'],
+  variable: '--font-tajawal',
 });
 
 // Dynamic metadata generation based on store data
@@ -84,9 +85,9 @@ export default async function RootLayout({
                   document.documentElement.lang = serverLang;
                   document.documentElement.dir = serverDir;
 
-                  // Apply fonts based on server language to prevent font flashing
-                  document.documentElement.className = document.documentElement.className.replace(/(font-inter|font-arabic)/g, '');
-                  document.documentElement.classList.add(serverLang === 'ar' ? 'font-arabic' : 'font-inter');
+                  // Apply Tajawal font for both languages to prevent font flashing
+                  document.documentElement.className = document.documentElement.className.replace(/(font-inter|font-arabic|font-tajawal)/g, '');
+                  document.documentElement.classList.add('font-tajawal');
                 } catch (e) {
                   // Fallback if anything goes wrong
                   document.documentElement.dir = '${store?.language === 'ar' ? 'rtl' : 'ltr'}';
@@ -99,7 +100,7 @@ export default async function RootLayout({
 
         {/* Preload critical resources */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap"
           rel="stylesheet"
         />
         <link
@@ -132,18 +133,18 @@ export default async function RootLayout({
           />
         ))}
       </head>
-      <body className={`${inter.variable} ${notoSansArabic.variable}`} style={{ backgroundColor: store?.theme?.color || undefined }}>
+      <body className={`${inter.variable} ${tajawal.variable}`} style={{ backgroundColor: store?.theme?.color || undefined }}>
         {/* Google Tag Manager (noscript) - TODO: Add back when SEO settings are available in API */}
 
         <StoreProvider store={store}>
           <LanguageProvider initialLanguage={store?.language}>
             <Providers>
-              <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20 text-foreground relative overflow-hidden">
+              <div className="min-h-screen flex flex-col bg-gradient-to-br from-zinc-950 to-zinc-900 text-white relative overflow-hidden">
                 {/* Liquid Glass Background Pattern */}
                 <div className="fixed inset-0 opacity-30 dark:opacity-20">
-                  <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-                  <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-                  <div className="absolute -bottom-8 left-20 w-72 h-72 bg-accent/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+                  <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-500/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+                  <div className="absolute top-0 -right-4 w-72 h-72 bg-emerald-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+                  <div className="absolute -bottom-8 left-20 w-72 h-72 bg-emerald-600/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
                 </div>
 
                 <div className="relative z-10 flex flex-col min-h-screen">

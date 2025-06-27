@@ -24,6 +24,11 @@ export default function MobileTabBar() {
   const { count } = useCart();
   const { t } = useTranslation();
 
+  // Hide the tab bar on product pages
+  if (pathname.startsWith('/products/')) {
+    return null;
+  }
+
   const tabs = [
     {
       name: t('home'),
@@ -64,12 +69,16 @@ export default function MobileTabBar() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden">
-      {/* Glass background with blur */}
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-xl border-t border-border/30"></div>
-
+    <>
+      {/* Spacer to prevent content from being hidden behind floating tab bar */}
+      <div className="h-24 sm:hidden" />
+      
+      {/* Floating Tab Bar */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 sm:hidden">
+        {/* Floating container with enhanced glass effect */}
+        <div className="bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800/50 rounded-2xl shadow-2xl shadow-black/20 bg-gradient-to-r from-zinc-900/70 to-zinc-900/50">
       {/* Tab content */}
-      <div className="relative flex items-center justify-around px-2 py-3 safe-area-inset-bottom">
+          <div className="flex items-center justify-around px-2 py-3">
         {tabs.map((tab) => {
           const IconComponent = tab.isActive ? tab.activeIcon : tab.icon;
 
@@ -79,22 +88,22 @@ export default function MobileTabBar() {
               href={tab.href}
               className={`relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 ${
                 tab.isActive
-                  ? 'bg-primary/10 scale-105'
-                  : 'hover:bg-muted/50 active:scale-95'
+                      ? 'bg-emerald-500/10 scale-105'
+                      : 'hover:bg-zinc-800/50 active:scale-95'
               }`}
             >
               <div className="relative">
                 <IconComponent
                   className={`h-6 w-6 transition-colors ${
                     tab.isActive
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
+                          ? 'text-emerald-500'
+                          : 'text-zinc-300'
                   }`}
                 />
 
                 {/* Badge for cart count */}
                 {tab.badge && (
-                  <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-lg">
+                      <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-lg">
                     {tab.badge > 99 ? '99+' : tab.badge}
                   </div>
                 )}
@@ -102,20 +111,22 @@ export default function MobileTabBar() {
 
               <span className={`text-xs font-medium mt-1 transition-colors ${
                 tab.isActive
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
+                      ? 'text-emerald-500'
+                      : 'text-zinc-300'
               }`}>
                 {tab.name}
               </span>
 
               {/* Active indicator */}
               {tab.isActive && (
-                <div className="absolute -bottom-1 w-1 h-1 bg-primary rounded-full"></div>
+                    <div className="absolute -bottom-1 w-1 h-1 bg-emerald-500 rounded-full"></div>
               )}
             </Link>
           );
         })}
       </div>
     </div>
+      </div>
+    </>
   );
 }

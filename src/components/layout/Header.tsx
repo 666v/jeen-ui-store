@@ -3,12 +3,11 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { ShoppingCartIcon, UserIcon, Bars3Icon, XMarkIcon, MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ShoppingCartIcon, UserIcon, Bars3Icon, XMarkIcon, MagnifyingGlassIcon, ChevronDownIcon, HeartIcon, HomeIcon, ShoppingBagIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { useCurrency } from '@/lib/currency';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AuthModal from '@/components/auth/AuthModal';
 import CurrencySelector from '@/components/CurrencySelector';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -51,6 +50,7 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [showAllMobileCategories, setShowAllMobileCategories] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { isAuthenticated, customer, logout } = useAuth();
   const { count, fetchCart } = useCart();
   const { initializeFromStore } = useCurrency();
@@ -73,6 +73,16 @@ export default function Header() {
       initializeFromStore(store.currency);
     }
   }, [store?.currency, initializeFromStore]);
+
+  // Handle scroll for floating effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Handle click outside to close dropdowns
   useEffect(() => {
@@ -162,21 +172,28 @@ export default function Header() {
         </div>
       )}
 
-      <header className="bg-background shadow-sm border-b border-border">
+      {/* Floating Header */}
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'pt-4' : 'pt-6'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+          {/* Floating Navigation Bar */}
+          <div className={`bg-zinc-900/80 backdrop-blur-2xl border border-zinc-800/50 rounded-2xl shadow-2xl shadow-black/20 transition-all duration-300 ${
+            isScrolled ? 'py-3' : 'py-4'
+          }`}>
+            <div className="flex justify-between items-center px-4 sm:px-6">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3">
+                <Link href="/" className="flex items-center gap-3 group">
               {store?.logo ? (
                 <img
                   src={store.logo}
                   alt={store.name || 'Store'}
-                  className="h-10 w-auto object-contain"
+                      className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
                 />
               ) : (
-                <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                  <span className="text-primary font-bold">
+                    <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
+                      <span className="text-emerald-500 font-bold text-sm">
                     {(store?.name || 'Store').charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -184,12 +201,26 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <Link href="/" className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              {/* Desktop Navigation */}
+              <nav className="hidden lg:flex gap-6">
+                <Link 
+                  href="/" 
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    pathname === '/' 
+                      ? 'text-emerald-500 bg-emerald-500/10' 
+                      : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                  }`}
+                >
               {t('home')}
             </Link>
-            <Link href="/products" className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <Link 
+                  href="/products" 
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    pathname.startsWith('/products') 
+                      ? 'text-emerald-500 bg-emerald-500/10' 
+                      : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                  }`}
+                >
               {t('products')}
             </Link>
 
@@ -197,18 +228,21 @@ export default function Header() {
             <div className="relative" ref={categoriesRef}>
               <button
                 onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-                className="flex items-center space-x-1 text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pathname.startsWith('/categories') 
+                        ? 'text-emerald-500 bg-emerald-500/10' 
+                        : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                    }`}
               >
                 <span>{t('categories')}</span>
-                <ChevronDownIcon className={`h-4 w-4 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} />
               </button>
               {isCategoriesOpen && (
-                <div className="absolute left-0 mt-2 w-64 bg-card/90 backdrop-blur-md border border-border/50 rounded-md shadow-lg z-50">
-                  <div className="py-1 max-h-80 overflow-y-auto">
+                    <div className="absolute rtl:right-0 ltr:left-0 mt-2 w-64 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800/50 rounded-xl shadow-2xl shadow-black/20 z-50">
+                      <div className="py-2 max-h-80 overflow-y-auto">
                     <Link
                       href="/categories"
                       onClick={() => setIsCategoriesOpen(false)}
-                      className="block px-4 py-2 text-sm font-medium text-primary hover:bg-muted/50 transition-colors border-b border-border/30"
+                          className="block px-4 py-2 text-sm font-medium text-emerald-500 hover:bg-emerald-500/10 transition-colors border-b border-zinc-800/30"
                     >
 {t('view')} {t('categories')}
                     </Link>
@@ -217,13 +251,13 @@ export default function Header() {
                         key={category.id}
                         href={`/categories/${category.slug}`}
                         onClick={() => setIsCategoriesOpen(false)}
-                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
-                        <div className="flex items-center space-x-2">
+                            <div className="flex items-center gap-2">
                           <span>{category.icon || '📦'}</span>
                           <span>{category.name}</span>
                           {category.products_count && (
-                            <span className="text-xs text-muted-foreground">({category.products_count})</span>
+                                <span className="text-xs text-zinc-400">({category.products_count})</span>
                           )}
                         </div>
                       </Link>
@@ -232,7 +266,7 @@ export default function Header() {
                       <Link
                         href="/categories"
                         onClick={() => setIsCategoriesOpen(false)}
-                        className="block px-4 py-2 text-sm text-primary hover:bg-muted/50 transition-colors border-t border-border/30 text-center"
+                            className="block px-4 py-2 text-sm text-emerald-500 hover:bg-emerald-500/10 transition-colors border-t border-zinc-800/30 text-center"
                       >
 {t('view')} {t('categories')}
                       </Link>
@@ -244,15 +278,15 @@ export default function Header() {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-3">
             {/* Desktop only items */}
-            <div className="hidden md:flex items-center space-x-4">
+                <div className="hidden md:flex items-center gap-3">
               {/* Search */}
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-2 text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-all duration-200"
               >
-                <MagnifyingGlassIcon className="h-6 w-6" />
+                    <MagnifyingGlassIcon className="h-5 w-5" />
               </button>
 
               {/* Language Switcher */}
@@ -260,17 +294,17 @@ export default function Header() {
 
               {/* Currency Selector */}
               <CurrencySelector />
-
-              {/* Theme Toggle */}
-              <ThemeToggle />
             </div>
 
             {/* Cart - Always visible */}
-            <Link href="/cart" className="p-2 text-muted-foreground hover:text-foreground relative transition-colors">
-              <ShoppingCartIcon className="h-6 w-6" />
+                <Link 
+                  href="/cart" 
+                  className="p-2 text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-lg relative transition-all duration-200"
+                >
+                  <ShoppingCartIcon className="h-5 w-5" />
               {count > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {count}
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-lg">
+                      {count > 99 ? '99+' : count}
                 </span>
               )}
             </Link>
@@ -280,32 +314,32 @@ export default function Header() {
               <div className="hidden md:block relative" ref={userMenuRef}>
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="flex items-center gap-2 text-zinc-300 hover:text-white hover:bg-zinc-800/50 p-2 rounded-lg transition-all duration-200"
                 >
-                  <UserIcon className="h-6 w-6" />
-                  <span className="hidden sm:block">{customer?.first_name}</span>
+                      <UserIcon className="h-5 w-5" />
+                      <span className="hidden sm:block text-sm font-medium">{customer?.first_name}</span>
                 </button>
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-card/90 backdrop-blur-md border border-border/50 rounded-md shadow-lg z-50">
-                    <div className="py-1">
+                      <div className="absolute rtl:left-0 ltr:right-0 mt-2 w-48 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800/50 rounded-xl shadow-2xl shadow-black/20 z-50">
+                        <div className="py-2">
                       <Link
                         href="/account"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
                         {t('account')}
                       </Link>
                       <Link
                         href="/orders"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
                         {t('orders')}
                       </Link>
                       <Link
                         href="/wishlist"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
                         {t('wishlist')}
                       </Link>
@@ -314,7 +348,7 @@ export default function Header() {
                           logout();
                           setIsUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
                       >
                         {t('logout')}
                       </button>
@@ -326,7 +360,7 @@ export default function Header() {
               <Button
                 variant="outline"
                 size="sm"
-                className="hidden md:flex"
+                    className="hidden md:flex border-zinc-800/50 text-zinc-300 hover:text-white hover:bg-zinc-800/50"
                 onClick={() => setIsAuthModalOpen(true)}
               >
                 {t('login')}
@@ -336,14 +370,16 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="md:hidden p-2 text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-all duration-200"
             >
               {isMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" />
+                    <XMarkIcon className="h-5 w-5" />
               ) : (
-                <Bars3Icon className="h-6 w-6" />
+                    <Bars3Icon className="h-5 w-5" />
               )}
             </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -358,145 +394,178 @@ export default function Header() {
               onClick={() => setIsMenuOpen(false)}
             />
             
-            {/* Sidebar */}
+            {/* Enhanced Floating Sidebar */}
             <div 
-              className={`fixed top-0 right-0 h-full w-80 bg-card/95 backdrop-blur-lg border-l border-border/50 shadow-2xl z-50 md:hidden transform transition-transform duration-300 ease-in-out ${
-                isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+              className={`fixed top-4 rtl:left-4 ltr:right-4 h-[calc(100vh-2rem)] w-80 bg-zinc-900/95 backdrop-blur-2xl border border-zinc-800/50 rounded-2xl shadow-2xl shadow-black/30 z-50 md:hidden transform transition-all duration-300 ease-out ${
+                isMenuOpen ? 'translate-x-0 opacity-100 scale-100' : 'rtl:translate-x-full ltr:-translate-x-full opacity-0 scale-95'
               }`}
             >
               <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-border/50">
-                  <h2 className="text-lg font-semibold text-foreground">{t('menu')}</h2>
+                {/* Enhanced Header */}
+                <div className="flex items-center justify-between p-6 border-b border-zinc-800/30">
+                  <div className="flex items-center gap-3">
+                    {store?.logo ? (
+                      <img
+                        src={store.logo}
+                        alt={store.name || 'Store'}
+                        className="h-8 w-auto object-contain"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                        <span className="text-emerald-500 font-bold text-sm">
+                          {(store?.name || 'Store').charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    <h2 className="text-lg font-semibold text-white">{t('menu')}</h2>
+                  </div>
                   <button
                     onClick={() => setIsMenuOpen(false)}
-                    className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-2 text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-all duration-200"
                   >
-                    <XMarkIcon className="h-6 w-6" />
+                    <XMarkIcon className="h-5 w-5" />
                   </button>
                 </div>
 
-                {/* Content */}
+                {/* Enhanced Content */}
                 <div className="flex-1 overflow-y-auto">
-                  <div className="p-4 space-y-6">
-                    {/* User Section */}
+                  <div className="p-6 space-y-8">
+                    {/* Enhanced User Section */}
                     {isAuthenticated ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                          <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                            <UserIcon className="h-6 w-6 text-primary" />
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 rounded-xl border border-emerald-500/20">
+                          <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                            <UserIcon className="h-6 w-6 text-emerald-500" />
                           </div>
                           <div>
-                            <p className="font-medium text-foreground">{customer?.first_name}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="font-semibold text-white">{customer?.first_name}</p>
+                            <p className="text-sm text-zinc-400">
                               {customer?.phone ? formatPhoneNumber(customer.phone, customer?.country_code) : customer?.email}
                             </p>
                           </div>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           <Link
                             href="/account"
                             onClick={() => setIsMenuOpen(false)}
-                            className="block px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                           >
-                            {t('account')}
+                            <UserIcon className="h-5 w-5" />
+                            <span>{t('account')}</span>
                           </Link>
                           <Link
                             href="/orders"
                             onClick={() => setIsMenuOpen(false)}
-                            className="block px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                           >
-                            {t('orders')}
+                            <ShoppingCartIcon className="h-5 w-5" />
+                            <span>{t('orders')}</span>
                           </Link>
                           <Link
                             href="/wishlist"
                             onClick={() => setIsMenuOpen(false)}
-                            className="block px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                           >
-                            {t('wishlist')}
+                            <HeartIcon className="h-5 w-5" />
+                            <span>{t('wishlist')}</span>
                           </Link>
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         <Button
                           onClick={() => {
                             setIsAuthModalOpen(true);
                             setIsMenuOpen(false);
                           }}
-                          className="w-full"
+                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white"
                         >
                           {t('login')}
                         </Button>
                       </div>
                     )}
 
-                    {/* Navigation */}
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Navigation</h3>
-                      <div className="space-y-1">
+                    {/* Enhanced Navigation */}
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide px-4">Navigation</h3>
+                      <div className="space-y-2">
                         <Link
                           href="/"
                           onClick={() => setIsMenuOpen(false)}
-                          className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                            pathname === '/' 
+                              ? 'text-emerald-500 bg-emerald-500/10' 
+                              : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                          }`}
                         >
-                          {t('home')}
+                          <HomeIcon className="h-5 w-5" />
+                          <span>{t('home')}</span>
                         </Link>
                         <Link
                           href="/products"
                           onClick={() => setIsMenuOpen(false)}
-                          className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                            pathname.startsWith('/products') 
+                              ? 'text-emerald-500 bg-emerald-500/10' 
+                              : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                          }`}
                         >
-                          {t('products')}
+                          <ShoppingBagIcon className="h-5 w-5" />
+                          <span>{t('products')}</span>
                         </Link>
                         <Link
                           href="/categories"
                           onClick={() => setIsMenuOpen(false)}
-                          className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${
+                            pathname.startsWith('/categories') 
+                              ? 'text-emerald-500 bg-emerald-500/10' 
+                              : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                          }`}
                         >
-                          {t('categories')}
+                          <Squares2X2Icon className="h-5 w-5" />
+                          <span>{t('categories')}</span>
                         </Link>
                       </div>
                     </div>
 
-                    {/* Categories */}
+                    {/* Enhanced Categories */}
                     {(store as any)?.categories && (store as any).categories.length > 0 && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('categories')}</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between px-4">
+                          <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">{t('categories')}</h3>
                           {(store as any).categories.length > 3 && (
                             <button
                               onClick={() => setShowAllMobileCategories(!showAllMobileCategories)}
-                              className="text-xs text-primary hover:text-primary/80 transition-colors"
+                              className="text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
                             >
                               {showAllMobileCategories ? 'أقل' : 'المزيد'}
                             </button>
                           )}
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           {(showAllMobileCategories ? (store as any).categories : (store as any).categories.slice(0, 3)).map((category: any) => (
                             <Link
                               key={category.id}
                               href={`/categories/${category.slug}`}
                               onClick={() => setIsMenuOpen(false)}
-                              className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                             >
-                              <div className="flex items-center space-x-2">
-                                <span>{category.icon || '📦'}</span>
-                                <span>{category.name}</span>
+                              <span className="text-lg">{category.icon || '📦'}</span>
+                              <span className="flex-1">{category.name}</span>
                                 {category.products_count && (
-                                  <span className="text-xs text-muted-foreground">({category.products_count})</span>
+                                <span className="text-xs text-zinc-400 bg-zinc-800/50 px-2 py-1 rounded-full">
+                                  {category.products_count}
+                                </span>
                                 )}
-                              </div>
                             </Link>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* Tools */}
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Tools</h3>
+                    {/* Enhanced Tools */}
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide px-4">Tools</h3>
                       <div className="space-y-4">
                         {/* Search */}
                         <button
@@ -504,41 +573,36 @@ export default function Header() {
                             setIsSearchModalOpen(true);
                             setIsMenuOpen(false);
                           }}
-                          className="flex items-center space-x-3 w-full px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                         >
                           <MagnifyingGlassIcon className="h-5 w-5" />
                           <span>{t('search')}</span>
                         </button>
 
                         {/* Language Switcher */}
-                        <div className="px-3">
+                        <div className="px-4">
                           <LanguageSwitcher />
                         </div>
 
                         {/* Currency Selector */}
-                        <div className="px-3">
+                        <div className="px-4">
                           <CurrencySelector />
-                        </div>
-
-                        {/* Theme Toggle */}
-                        <div className="flex items-center justify-between px-3">
-                          <span className="text-sm text-muted-foreground">Theme</span>
-                          <ThemeToggle />
                         </div>
                       </div>
                     </div>
 
-                    {/* Logout */}
+                    {/* Enhanced Logout */}
                     {isAuthenticated && (
-                      <div className="pt-4 border-t border-border/50">
+                      <div className="pt-4 border-t border-zinc-800/30">
                         <button
                           onClick={() => {
                             logout();
                             setIsMenuOpen(false);
                           }}
-                          className="block w-full px-3 py-2 rounded-md text-left text-sm font-medium text-red-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-left text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200"
                         >
-                          {t('logout')}
+                          <XMarkIcon className="h-5 w-5" />
+                          <span>{t('logout')}</span>
                         </button>
                       </div>
                     )}
@@ -551,18 +615,21 @@ export default function Header() {
 
         {/* Search bar */}
         {isSearchOpen && (
-          <div className="py-4 border-t border-border/30">
+          <div className="py-4 border-t border-zinc-800/30">
             <div className="relative">
               <input
                 type="text"
                 placeholder={t('search')}
-                className="w-full px-4 py-2 bg-card/50 backdrop-blur-sm border border-border/50 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground transition-colors"
+                className="w-full px-4 py-2 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-zinc-400 transition-colors"
               />
-              <MagnifyingGlassIcon className="absolute right-3 top-2.5 h-5 w-5 text-muted-foreground" />
+              <MagnifyingGlassIcon className="absolute right-3 top-2.5 h-5 w-5 text-zinc-400" />
             </div>
           </div>
         )}
-      </div>
+      </header>
+
+      {/* Spacer for fixed header */}
+      <div className="h-24" />
 
       {/* Search Modal */}
       <SearchModal
@@ -579,7 +646,6 @@ export default function Header() {
             fetchCart(); // Refresh cart after login
           }}
         />
-      </header>
     </>
   );
 }

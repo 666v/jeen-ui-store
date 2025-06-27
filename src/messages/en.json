@@ -310,5 +310,15 @@
     "english": "English",
     "arabic": "العربية",
     "currentLanguage": "Current Language"
+  },
+  "hero": {
+    "badgeNew": "NEW",
+    "badgeAnnouncement": "Introducing our new template collection",
+    "headline1": "Your ultimate destination",
+    "headline2": "for buying",
+    "headlineHighlight": "high-quality web templates",
+    "subheading": "Discover a curated collection of premium website templates designed for modern businesses, startups, and creators. Elevate your online presence with stunning, ready-to-use designs.",
+    "ctaPrimary": "Get started",
+    "ctaSecondary": "Learn more"
   }
 }
