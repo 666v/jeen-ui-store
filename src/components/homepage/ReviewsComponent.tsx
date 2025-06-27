@@ -167,14 +167,14 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
                         {renderStars(review.rating)}
                       </div>
                       {/* Product badge if available */}
-                      {review.product_name && (
-                        <span className="inline-block bg-primary/20 text-primary text-xs font-semibold rounded-full px-3 py-1 mb-4">{review.product_name}</span>
+                      {((review as any).product_name) && (
+                        <span className="inline-block bg-primary/20 text-primary text-xs font-semibold rounded-full px-3 py-1 mb-4">{(review as any).product_name}</span>
                       )}
                       {/* Review Text */}
                       <p className="text-white/90 text-lg sm:text-xl font-medium leading-relaxed mb-6 relative z-10">
-                        <span className={`text-primary/80 text-2xl font-bold ${isRTL ? 'ml-2' : 'mr-2'}`}>“</span>
+                        <span className={`text-primary/80 text-2xl font-bold ${isRTL ? 'ml-2' : 'mr-2'}`}>" </span>
                         {review.comment}
-                        <span className={`text-primary/80 text-2xl font-bold ${isRTL ? 'mr-2' : 'ml-2'}`}>”</span>
+                        <span className={`text-primary/80 text-2xl font-bold ${isRTL ? 'mr-2' : 'ml-2'}`}>"</span>
                       </p>
                       {/* Date */}
                       <span className="inline-block bg-white/20 text-white/70 text-xs font-semibold rounded-full px-4 py-1 mt-auto">
