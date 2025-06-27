@@ -162,7 +162,7 @@ const LiveCursor = ({ className }: LiveCursorProps) => {
   return (
     <div className={cn("relative aspect-[4/3] size-full bg-[radial-gradient(rgba(63,63,70,0.3),transparent_1px)] [background-size:16px_16px]", className)}>
       <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
-        <AvatarStack animate size={24} className="sm:size-32">
+        <AvatarStack animate size="lg" className="sm:size-32">
           {usersWithPositions.map((user) => (
             <Avatar key={user.id} className="w-6 h-6 sm:w-8 sm:h-8">
               <AvatarImage className="mt-0 mb-0" src={user.avatar} />
