@@ -171,7 +171,7 @@ export default function ClientReviewsPage() {
                     </span>
                   </div>
                   <p className="text-muted-foreground">
-                    {t('based_on_reviews', { count: stats.total_reviews })}
+                    {t('based_on_reviews').replace('{count}', stats.total_reviews.toString())}
                   </p>
                 </div>
                 
