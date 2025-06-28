@@ -5,6 +5,7 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/components/LanguageProvider';
+import { useTranslation } from '@/lib/useTranslation';
 import Link from 'next/link';
 
 interface Review {
@@ -32,6 +33,7 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ['store-reviews'],
@@ -106,10 +108,24 @@ export default function ReviewsComponent({ className = '' }: ReviewsComponentPro
     <section className={`py-16 ${className}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-white mb-4">
-            ما يقوله عملاؤنا
+          {/* Section Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-xs font-medium mb-6">
+            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+            <span>{t('reviews.customerTestimonials')}</span>
+          </div>
+          
+          {/* Main Title */}
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+            <span className="bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent">
+              ما يقوله عملاؤنا
+            </span>
           </h2>
-          <p className="text-white/70 max-w-2xl mx-auto">
+          
+          {/* Decorative Line */}
+          <div className="w-24 h-0.5 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-full mx-auto mb-6"></div>
+          
+          {/* Subtitle */}
+          <p className="text-zinc-300 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
             اكتشف تجارب العملاء الحقيقية مع منتجاتنا وخدماتنا
           </p>
         </div>

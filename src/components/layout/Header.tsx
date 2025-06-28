@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { ShoppingCartIcon, UserIcon, Bars3Icon, XMarkIcon, MagnifyingGlassIcon, ChevronDownIcon, HeartIcon, HomeIcon, ShoppingBagIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { ShoppingCartIcon, UserIcon, Bars3Icon, XMarkIcon, MagnifyingGlassIcon, ChevronDownIcon, HeartIcon, HomeIcon, ShoppingBagIcon, Squares2X2Icon, CogIcon, GlobeAltIcon, CurrencyDollarIcon, SunIcon, TagIcon, MapIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { useCurrency } from '@/lib/currency';
@@ -14,66 +14,28 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import SearchModal from '@/components/ui/SearchModal';
 import { useStore } from '@/components/StoreProvider';
 import { useLanguage } from '@/components/LanguageProvider';
+import { useTranslation } from '@/lib/useTranslation';
 
-// Utility function to format phone number
+// Helper function to format phone numbers
 const formatPhoneNumber = (phone: string, countryCode: string = ''): string => {
   if (!phone) return '';
   
-  // Remove any existing + or spaces
-  const cleanPhone = phone.replace(/^\+?/, '').replace(/\s+/g, '');
+  // Remove any non-digit characters
+  const cleaned = phone.replace(/\D/g, '');
   
-  // If phone already starts with country code, return formatted
-  if (cleanPhone.length > 10) {
-    return `+${cleanPhone}`;
+  // If it starts with country code, format accordingly
+  if (countryCode && cleaned.startsWith(countryCode.replace(/\D/g, ''))) {
+    const numberWithoutCode = cleaned.substring(countryCode.replace(/\D/g, '').length);
+    return `+${countryCode.replace(/\D/g, '')} ${numberWithoutCode}`;
   }
   
-  // If countryCode is provided, add it
-  if (countryCode) {
-    return `+${countryCode} ${cleanPhone}`;
-  }
-  
-  // Default Saudi country code if phone seems local
-  if (cleanPhone.length === 9 || cleanPhone.length === 10) {
-    return `+966 ${cleanPhone}`;
-  }
-  
-  return phone;
+  // Default formatting
+  return cleaned;
 };
 
 export default function Header() {
+  const { t } = useTranslation();
   const { locale } = useLanguage();
-  const t = (key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      en: {
-        'home': 'Home',
-        'products': 'Products',
-        'categories': 'Categories',
-        'cart': 'Cart',
-        'wishlist': 'Wishlist',
-        'account': 'Account',
-        'orders': 'Orders',
-        'login': 'Login',
-        'logout': 'Logout',
-        'addToCart': 'Add to Cart',
-        // ...add more as needed
-      },
-      ar: {
-        'home': 'الرئيسية',
-        'products': 'المنتجات',
-        'categories': 'الأقسام',
-        'cart': 'السلة',
-        'wishlist': 'قائمة الرغبات',
-        'account': 'الحساب',
-        'orders': 'الطلبات',
-        'login': 'تسجيل الدخول',
-        'logout': 'تسجيل الخروج',
-        'addToCart': 'أضف إلى السلة',
-        // ...add more as needed
-      }
-    };
-    // Always default to English value, never the key
-    return (translations[locale]?.[key] || translations['en'][key] || translations['en'][key]);
-  };
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -243,7 +205,7 @@ export default function Header() {
                       : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
                   }`}
                 >
-              {t('home')}
+              {t('navigation.home')}
             </Link>
                 <Link 
                   href="/products" 
@@ -253,7 +215,7 @@ export default function Header() {
                       : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
                   }`}
                 >
-              {t('products')}
+              {t('navigation.products')}
             </Link>
 
             {/* Categories Dropdown */}
@@ -266,7 +228,7 @@ export default function Header() {
                         : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
                     }`}
               >
-                <span>{t('categories')}</span>
+                <span>{t('navigation.categories')}</span>
               </button>
               {isCategoriesOpen && (
                     <div className="absolute rtl:right-0 ltr:left-0 mt-2 w-64 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800/50 rounded-xl shadow-2xl shadow-black/20 z-50">
@@ -276,7 +238,7 @@ export default function Header() {
                       onClick={() => setIsCategoriesOpen(false)}
                           className="block px-4 py-2 text-sm font-medium text-emerald-500 hover:bg-emerald-500/10 transition-colors border-b border-zinc-800/30"
                     >
-{t('view')} {t('categories')}
+{t('common.view')} {t('navigation.categories')}
                     </Link>
                     {(store as any)?.categories?.slice(0, 10).map((category: any) => (
                       <Link
@@ -300,7 +262,7 @@ export default function Header() {
                         onClick={() => setIsCategoriesOpen(false)}
                             className="block px-4 py-2 text-sm text-emerald-500 hover:bg-emerald-500/10 transition-colors border-t border-zinc-800/30 text-center"
                       >
-{t('view')} {t('categories')}
+{t('common.view')} {t('navigation.categories')}
                       </Link>
                     )}
                   </div>
@@ -359,21 +321,21 @@ export default function Header() {
                         onClick={() => setIsUserMenuOpen(false)}
                             className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
-                        {t('account')}
+                        {t('navigation.account')}
                       </Link>
                       <Link
                         href="/orders"
                         onClick={() => setIsUserMenuOpen(false)}
                             className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
-                        {t('orders')}
+                        {t('navigation.orders')}
                       </Link>
                       <Link
                         href="/wishlist"
                         onClick={() => setIsUserMenuOpen(false)}
                             className="block px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors"
                       >
-                        {t('wishlist')}
+                        {t('navigation.wishlist')}
                       </Link>
                       <button
                         onClick={() => {
@@ -382,7 +344,7 @@ export default function Header() {
                         }}
                             className="block w-full  px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
                       >
-                        {t('logout')}
+                        {t('auth.logout')}
                       </button>
                     </div>
                   </div>
@@ -395,7 +357,7 @@ export default function Header() {
                     className="hidden md:flex border-zinc-800/50 text-zinc-300 hover:text-white bg-zinc-800/50 hover:bg-zinc-800/50"
                 onClick={() => setIsAuthModalOpen(true)}
               >
-                {t('login')}
+                {t('auth.login')}
               </Button>
             )}
 
@@ -449,7 +411,7 @@ export default function Header() {
                         </span>
                       </div>
                     )}
-                    <h2 className="text-lg font-semibold text-white">{t('menu')}</h2>
+                    <h2 className="text-lg font-semibold text-white">{t('common.menu')}</h2>
                   </div>
                   <button
                     onClick={() => setIsMenuOpen(false)}
@@ -460,21 +422,60 @@ export default function Header() {
                 </div>
 
                 {/* Enhanced Content */}
-                <div className="flex-1 overflow-y-auto">
-                  <div className="p-6 space-y-8">
-                    {/* Enhanced User Section */}
-                    {isAuthenticated ? (
+                <div className="flex-1 overflow-y-auto py-6 space-y-8">
+                  {/* Enhanced Tools Section - Moved to Top */}
                       <div className="space-y-4">
-                        <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 rounded-xl border border-emerald-500/20">
-                          <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
-                            <UserIcon className="h-6 w-6 text-emerald-500" />
+                    <div className="px-4">
+                      <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <CogIcon className="h-4 w-4" />
+                        {t('common.tools')}
+                      </h3>
+                    </div>
+                    
+                    {/* Search Tool - Full Width Button */}
+                    <div className="px-4">
+                      <button
+                        onClick={() => {
+                          setIsSearchModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 text-zinc-300 hover:text-white hover:bg-zinc-800/70 transition-all duration-200 text-left"
+                      >
+                        <MagnifyingGlassIcon className="h-5 w-5 text-zinc-400" />
+                        <span className="text-sm">{t('common.search')}</span>
+                      </button>
+                    </div>
+
+                    {/* Language and Currency Tools - Vertical List */}
+                    <div className="space-y-3 px-4">
+                      {/* Language Tool */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <GlobeAltIcon className="h-5 w-5 text-blue-400" />
+                          <span className="text-sm text-zinc-300">{t('common.language')}</span>
                           </div>
-                          <div>
-                            <p className="font-semibold text-white">{customer?.first_name}</p>
-                            <p className="text-sm text-zinc-400">
-                              {customer?.phone ? formatPhoneNumber(customer.phone, customer?.country_code) : customer?.email}
-                            </p>
+                        <LanguageSwitcher />
                           </div>
+
+                      {/* Currency Tool */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <CurrencyDollarIcon className="h-5 w-5 text-purple-400" />
+                          <span className="text-sm text-zinc-300">{t('common.currency')}</span>
+                        </div>
+                        <CurrencySelector />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User Section */}
+                  {isAuthenticated ? (
+                    <div className="space-y-4">
+                      <div className="px-4">
+                        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                          <UserIcon className="h-4 w-4" />
+                          {t('navigation.account')}
+                        </h3>
                         </div>
                         <div className="space-y-2">
                           <Link
@@ -483,7 +484,7 @@ export default function Header() {
                             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                           >
                             <UserIcon className="h-5 w-5" />
-                            <span>{t('account')}</span>
+                          <span>{t('navigation.account')}</span>
                           </Link>
                           <Link
                             href="/orders"
@@ -491,7 +492,7 @@ export default function Header() {
                             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                           >
                             <ShoppingCartIcon className="h-5 w-5" />
-                            <span>{t('orders')}</span>
+                          <span>{t('navigation.orders')}</span>
                           </Link>
                           <Link
                             href="/wishlist"
@@ -499,12 +500,19 @@ export default function Header() {
                             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
                           >
                             <HeartIcon className="h-5 w-5" />
-                            <span>{t('wishlist')}</span>
+                          <span>{t('navigation.wishlist')}</span>
                           </Link>
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-4">
+                      <div className="px-4">
+                        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                          <UserIcon className="h-4 w-4" />
+                          {t('common.auth')}
+                        </h3>
+                      </div>
+                      <div className="px-4">
                         <Button
                           onClick={() => {
                             setIsAuthModalOpen(true);
@@ -512,14 +520,20 @@ export default function Header() {
                           }}
                           className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white"
                         >
-                          {t('login')}
+                          {t('auth.login')}
                         </Button>
+                      </div>
                       </div>
                     )}
 
                     {/* Enhanced Navigation */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide px-4">Navigation</h3>
+                    <div className="px-4">
+                      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <MapIcon className="h-4 w-4" />
+                        {t('common.navigation')}
+                      </h3>
+                    </div>
                       <div className="space-y-2">
                         <Link
                           href="/"
@@ -531,7 +545,7 @@ export default function Header() {
                           }`}
                         >
                           <HomeIcon className="h-5 w-5" />
-                          <span>{t('home')}</span>
+                        <span>{t('navigation.home')}</span>
                         </Link>
                         <Link
                           href="/products"
@@ -543,7 +557,7 @@ export default function Header() {
                           }`}
                         >
                           <ShoppingBagIcon className="h-5 w-5" />
-                          <span>{t('products')}</span>
+                        <span>{t('navigation.products')}</span>
                         </Link>
                         <Link
                           href="/categories"
@@ -555,7 +569,7 @@ export default function Header() {
                           }`}
                         >
                           <Squares2X2Icon className="h-5 w-5" />
-                          <span>{t('categories')}</span>
+                        <span>{t('navigation.categories')}</span>
                         </Link>
                       </div>
                     </div>
@@ -564,7 +578,10 @@ export default function Header() {
                     {(store as any)?.categories && (store as any).categories.length > 0 && (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between px-4">
-                          <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">{t('categories')}</h3>
+                        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide flex items-center gap-2">
+                          <TagIcon className="h-4 w-4" />
+                          {t('navigation.categories')}
+                        </h3>
                           {(store as any).categories.length > 3 && (
                             <button
                               onClick={() => setShowAllMobileCategories(!showAllMobileCategories)}
@@ -595,34 +612,6 @@ export default function Header() {
                       </div>
                     )}
 
-                    {/* Enhanced Tools */}
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wide px-4">Tools</h3>
-                      <div className="space-y-4">
-                        {/* Search */}
-                        <button
-                          onClick={() => {
-                            setIsSearchModalOpen(true);
-                            setIsMenuOpen(false);
-                          }}
-                          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
-                        >
-                          <MagnifyingGlassIcon className="h-5 w-5" />
-                          <span>{t('search')}</span>
-                        </button>
-
-                        {/* Language Switcher */}
-                        <div className="px-4">
-                          <LanguageSwitcher />
-                        </div>
-
-                        {/* Currency Selector */}
-                        <div className="px-4">
-                          <CurrencySelector />
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Enhanced Logout */}
                     {isAuthenticated && (
                       <div className="pt-4 border-t border-zinc-800/30">
@@ -634,11 +623,10 @@ export default function Header() {
                           className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-left text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200"
                         >
                           <XMarkIcon className="h-5 w-5" />
-                          <span>{t('logout')}</span>
+                        <span>{t('auth.logout')}</span>
                         </button>
                       </div>
                     )}
-                  </div>
                 </div>
               </div>
             </div>
@@ -651,7 +639,7 @@ export default function Header() {
             <div className="relative">
               <input
                 type="text"
-                placeholder={t('search')}
+                placeholder={t('common.search')}
                 className="w-full px-4 py-2 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-zinc-400 transition-colors"
               />
               <MagnifyingGlassIcon className="absolute right-3 top-2.5 h-5 w-5 text-zinc-400" />

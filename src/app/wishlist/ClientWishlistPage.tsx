@@ -202,7 +202,7 @@ export default function WishlistPage() {
                 </div>
                 <div className="p-4 flex flex-col gap-2">
                   <Link href={`/products/${product.slug}`} className="font-bold text-white text-lg truncate hover:underline">
-                    {product.name}
+                      {product.name}
                   </Link>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-400 font-bold text-lg">{formatPrice(product.price.actual)}</span>

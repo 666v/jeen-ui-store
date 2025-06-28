@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
-import { XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 const languageNames = {
   en: 'English',
@@ -73,19 +73,17 @@ export default function LanguageSwitcher() {
     <>
       {/* Language Switcher Button in Top Bar */}
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className="flex items-center gap-2 h-9 px-3"
+        className="flex items-center space-x-2 bg-zinc-900/80 backdrop-blur-sm border-zinc-800/50 text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
         aria-label="Switch Language"
         onClick={openModal}
       >
         <Globe className="h-4 w-4" />
-        <span className="hidden sm:inline-block">
+        <span className="text-sm font-medium">
           {languageNames[locale as keyof typeof languageNames]}
         </span>
-        <span className="sm:hidden text-base">
-          {languageFlags[locale as keyof typeof languageFlags]}
-        </span>
+        <ChevronDownIcon className="h-3 w-3" />
       </Button>
 
       {/* Language Modal */}

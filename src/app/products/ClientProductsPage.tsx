@@ -5,14 +5,16 @@ import { useInfiniteProducts } from '@/lib/useInfiniteProducts';
 import { Product } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ShoppingCartIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import { ShoppingCartIcon, FunnelIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import ProductCard from '@/components/ui/ProductCard';
 import { useInView } from 'react-intersection-observer';
 import { useLanguage } from '@/components/LanguageProvider';
+import { useTranslation } from '@/lib/useTranslation';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export default function ClientProductsPage() {
   const { locale } = useLanguage();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('created_desc');
@@ -74,89 +76,193 @@ export default function ClientProductsPage() {
     });
   }, [productsData]);
 
-
   const breadcrumbItems = [
-    { name: locale === 'ar' ? 'جميع المنتجات' : 'All Products', href: '/products', current: true }
+    { name: t('products.title'), href: '/products', current: true }
   ];
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
-      
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-4 sm:mb-0">
-          {locale === 'ar' ? 'جميع المنتجات' : 'All Products'}
-        </h1>
+  // Quick filter chips
+  const quickFilters = [
+    { label: t('products.all'), value: '', count: allProducts.length },
+    { label: t('products.digital'), value: 'digital', count: allProducts.filter(p => p.type === 'digital').length },
+    { label: t('products.courses'), value: 'course', count: allProducts.filter(p => p.type === 'course').length },
+    { label: t('products.subscriptions'), value: 'subscription', count: allProducts.filter(p => p.type === 'subscription').length },
+  ];
 
-        {/* Search */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder={locale === 'ar' ? 'البحث عن المنتجات...' : 'Search products...'}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64 px-4 py-2 bg-zinc-800/60 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-          />
+  const activeFiltersCount = [
+    selectedType,
+    priceRange.min,
+    priceRange.max,
+    inStockOnly
+  ].filter(Boolean).length;
+
+  return (
+    <div className="min-h-screen from-zinc-900 via-zinc-900 to-black">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Breadcrumbs */}
+          <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+          
+          {/* Hero Content */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent mb-6">
+              {t('products.title')}
+            </h1>
+            <p className="text-xl text-zinc-300 max-w-2xl mx-auto leading-relaxed">
+              {t('products.browseProducts')} - {t('products.discoverAmazing')}
+            </p>
+          </div>
+
+          {/* Search and Controls */}
+          <div className="max-w-4xl mx-auto">
+            {/* Enhanced Search Bar */}
+            <div className="relative mb-8">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-zinc-400" />
+                <input
+                  type="text"
+                  placeholder={t('products.searchProducts')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-zinc-800/60 backdrop-blur-sm border border-zinc-700/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white placeholder-zinc-400"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                  >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Filter Chips */}
+            <div className="flex flex-wrap gap-3 mb-8 justify-center">
+              {quickFilters.map((filter) => (
+                <button
+                  key={filter.value}
+                  onClick={() => setSelectedType(filter.value)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    selectedType === filter.value
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                      : 'bg-zinc-800/60 text-zinc-300 hover:bg-zinc-700/60 hover:text-white border border-zinc-700/50'
+                  }`}
+                >
+                  {filter.label}
+                  <span className="ml-2 text-xs opacity-75">({filter.count})</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Controls Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+              {/* Results Count */}
+              <div className="text-zinc-400">
+                {isLoading ? (
+                  <div className="h-4 w-32 bg-zinc-800/60 rounded animate-pulse" />
+                ) : (
+                  <span>
+                    {t('products.showing')} <span className="text-white font-semibold">{allProducts.length}</span> {t('products.results')}
+                  </span>
+                )}
+              </div>
+
+              {/* Filter Button */}
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                variant="outline"
+                className="bg-zinc-800/60 border-zinc-700/50 text-zinc-300 hover:bg-zinc-700/60 hover:text-white hover:border-emerald-500"
+              >
+                <FunnelIcon className="h-4 w-4 mr-2" />
+                {t('common.filter')}
+                {activeFiltersCount > 0 && (
+                  <span className="ml-2 bg-emerald-500 text-white text-xs rounded-full px-2 py-1">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-card/30 backdrop-blur-md border border-border/50 rounded-xl shadow-xl overflow-hidden animate-pulse">
-              <div className="h-48 bg-muted/50"></div>
-              <div className="p-4">
-                <div className="h-4 bg-muted/50 rounded mb-2"></div>
-                <div className="h-4 bg-muted/50 rounded w-3/4 mb-3"></div>
-                <div className="flex justify-between items-center">
-                  <div className="h-6 bg-muted/50 rounded w-1/4"></div>
-                  <div className="h-8 bg-muted/50 rounded w-16"></div>
+      {/* Products Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-zinc-800/30 backdrop-blur-md border border-zinc-700/50 rounded-2xl shadow-xl overflow-hidden animate-pulse">
+                <div className="h-48 bg-zinc-700/50"></div>
+                <div className="p-6">
+                  <div className="h-4 bg-zinc-700/50 rounded mb-3"></div>
+                  <div className="h-4 bg-zinc-700/50 rounded w-3/4 mb-4"></div>
+                  <div className="flex justify-between items-center">
+                    <div className="h-6 bg-zinc-700/50 rounded w-1/4"></div>
+                    <div className="h-10 bg-zinc-700/50 rounded w-24"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {allProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
             ))}
           </div>
-
-          {/* Infinite scroll trigger */}
-          <div ref={loadMoreRef} className="mt-12 flex justify-center">
-            {isFetchingNextPage && (
-              <div className="flex items-center space-x-3 bg-card/30 backdrop-blur-md border border-border/50 rounded-xl px-6 py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span className="text-sm text-foreground">
-                  {locale === 'ar' ? 'تحميل المزيد...' : 'Loading more...'}
-                </span>
-              </div>
-            )}
-            {!hasNextPage && allProducts.length > 0 && (
-              <div className="flex items-center space-x-2 backdrop-blur-md border border-border/50 rounded-xl px-6 py-3">
-                <span className="text-sm text-muted-foreground">
-                  {locale === 'ar' ?
-                    `عرض جميع ${allProducts.length} منتج` :
-                    `Showing all ${allProducts.length} products`
-                  }
-                </span>
-              </div>
-            )}
+        ) : allProducts.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 mx-auto mb-6 bg-zinc-800/60 rounded-full flex items-center justify-center">
+              <MagnifyingGlassIcon className="h-12 w-12 text-zinc-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">
+              {t('products.noProductsFound')}
+            </h3>
+            <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+              {t('products.tryAdjustingFilters')}
+            </p>
+            <Button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedType('');
+                setSortBy('created_desc');
+                setPriceRange({ min: '', max: '' });
+                setInStockOnly(false);
+              }}
+              className="bg-emerald-500 hover:bg-emerald-600"
+            >
+              {t('products.clearFilters')}
+            </Button>
           </div>
-        </>
-      )}
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allProducts.map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  variant="default"
+                />
+              ))}
+            </div>
 
-      {/* Floating Filter Toggle Button - Show on all screen sizes */}
-      <div className="fixed bottom-20 right-6 rtl:right-auto rtl:left-6 z-50">
-        <Button
-          onClick={() => setShowFilters(!showFilters)}
-          className="bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all rounded-full w-14 h-14 p-0"
-        >
-          <FunnelIcon className="h-6 w-6" />
-        </Button>
+            {/* Infinite scroll trigger */}
+            <div ref={loadMoreRef} className="mt-12 flex justify-center">
+              {isFetchingNextPage && (
+                <div className="flex items-center space-x-3 bg-zinc-800/30 backdrop-blur-md border border-zinc-700/50 rounded-2xl px-8 py-6">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-500"></div>
+                  <span className="text-zinc-300">
+                    {t('products.loadingMore')}
+                  </span>
+                </div>
+              )}
+              {!hasNextPage && allProducts.length > 0 && (
+                <div className="flex items-center space-x-2 bg-zinc-800/30 backdrop-blur-md border border-zinc-700/50 rounded-2xl px-6 py-4">
+                  <span className="text-zinc-400">
+                    {t('products.showingAll', { count: allProducts.length })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Desktop Filter Modal */}
@@ -166,15 +272,15 @@ export default function ClientProductsPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowFilters(false)}
           />
-          <div className="relative bg-card backdrop-blur-lg border border-border rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+          <div className="relative bg-zinc-900/95 backdrop-blur-lg border border-zinc-700/50 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h3 className="text-xl font-semibold text-foreground">
-                {locale === 'ar' ? 'الفلاتر' : 'Filters'}
+            <div className="flex items-center justify-between p-6 border-b border-zinc-700/50">
+              <h3 className="text-xl font-semibold text-white">
+                {t('common.filter')}
               </h3>
               <button
                 onClick={() => setShowFilters(false)}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-800/60"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -188,59 +294,59 @@ export default function ClientProductsPage() {
                 {/* Product Type & Sort By */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-3">
-                      {locale === 'ar' ? 'نوع المنتج' : 'Product Type'}
+                    <label className="block text-sm font-medium text-white mb-3">
+                      {t('products.type')}
                     </label>
                     <select
                       value={selectedType}
                       onChange={(e) => setSelectedType(e.target.value)}
-                      className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white"
                     >
-                      <option value="">{locale === 'ar' ? 'جميع الأنواع' : 'All Types'}</option>
-                      <option value="digital">{locale === 'ar' ? 'منتجات رقمية' : 'Digital Products'}</option>
-                      <option value="subscription">{locale === 'ar' ? 'اشتراكات' : 'Subscriptions'}</option>
-                      <option value="course">{locale === 'ar' ? 'دورات' : 'Courses'}</option>
+                      <option value="">{t('products.allTypes')}</option>
+                      <option value="digital">{t('products.digital')}</option>
+                      <option value="subscription">{t('products.subscriptions')}</option>
+                      <option value="course">{t('products.courses')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-3">
-                      {locale === 'ar' ? 'ترتيب حسب' : 'Sort By'}
+                    <label className="block text-sm font-medium text-white mb-3">
+                      {t('products.sortBy')}
                     </label>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white"
                     >
-                      <option value="created_desc">{locale === 'ar' ? 'الأحدث أولا' : 'Newest First'}</option>
-                      <option value="created_asc">{locale === 'ar' ? 'الأقدم أولا' : 'Oldest First'}</option>
-                      <option value="name_asc">{locale === 'ar' ? 'الاسم أ-ي' : 'Name A-Z'}</option>
-                      <option value="name_desc">{locale === 'ar' ? 'الاسم ي-أ' : 'Name Z-A'}</option>
-                      <option value="price_asc">{locale === 'ar' ? 'السعر من الأقل للأعلى' : 'Price Low to High'}</option>
-                      <option value="price_desc">{locale === 'ar' ? 'السعر من الأعلى للأقل' : 'Price High to Low'}</option>
+                      <option value="created_desc">{t('products.newestFirst')}</option>
+                      <option value="created_asc">{t('products.oldestFirst')}</option>
+                      <option value="name_asc">{t('products.nameAZ')}</option>
+                      <option value="name_desc">{t('products.nameZA')}</option>
+                      <option value="price_asc">{t('products.priceLowToHigh')}</option>
+                      <option value="price_desc">{t('products.priceHighToLow')}</option>
                     </select>
                   </div>
                 </div>
 
                 {/* Price Range */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-3">
-                    {locale === 'ar' ? 'نطاق السعر' : 'Price Range'}
+                  <label className="block text-sm font-medium text-white mb-3">
+                    {t('products.priceRange')}
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="number"
-                      placeholder={locale === 'ar' ? 'الأدنى' : 'Minimum'}
+                      placeholder={t('products.minimum')}
                       value={priceRange.min}
                       onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                      className="px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      className="px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white placeholder-zinc-400"
                     />
                     <input
                       type="number"
-                      placeholder={locale === 'ar' ? 'الأعلى' : 'Maximum'}
+                      placeholder={t('products.maximum')}
                       value={priceRange.max}
                       onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                      className="px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      className="px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white placeholder-zinc-400"
                     />
                   </div>
                 </div>
@@ -252,10 +358,10 @@ export default function ClientProductsPage() {
                       type="checkbox"
                       checked={inStockOnly}
                       onChange={(e) => setInStockOnly(e.target.checked)}
-                      className="w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-0"
+                      className="w-5 h-5 rounded border-zinc-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 bg-zinc-800"
                     />
-                    <span className="text-sm font-medium text-foreground">
-                      {locale === 'ar' ? 'المتوفر فقط' : 'In Stock Only'}
+                    <span className="text-sm font-medium text-white">
+                      {t('products.inStockOnly')}
                     </span>
                   </label>
                 </div>
@@ -263,7 +369,7 @@ export default function ClientProductsPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-border bg-muted/30">
+            <div className="p-6 border-t border-zinc-700/50 bg-zinc-800/30">
               <div className="flex flex-col sm:flex-row gap-3 justify-between">
                 <Button
                   onClick={() => {
@@ -273,15 +379,15 @@ export default function ClientProductsPage() {
                     setInStockOnly(false);
                   }}
                   variant="outline"
-                  className="sm:w-auto"
+                  className="sm:w-auto border-zinc-600 text-zinc-300 hover:bg-zinc-700/60"
                 >
-                  {locale === 'ar' ? 'مسح جميع الفلاتر' : 'Clear All Filters'}
+                  {t('products.clearAllFilters')}
                 </Button>
                 <Button
                   onClick={() => setShowFilters(false)}
-                  className="sm:w-auto px-8"
+                  className="sm:w-auto px-8 bg-emerald-500 hover:bg-emerald-600"
                 >
-                  {locale === 'ar' ? 'تطبيق الفلاتر' : 'Apply Filters'}
+                  {t('products.applyFilters')}
                 </Button>
               </div>
             </div>
@@ -299,21 +405,21 @@ export default function ClientProductsPage() {
           />
 
           {/* Modal */}
-          <div className="fixed bottom-0 left-0 right-0 bg-card backdrop-blur-lg border-t border-border rounded-t-2xl shadow-2xl transform transition-transform duration-300 ease-in-out">
+          <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-700/50 rounded-t-2xl shadow-2xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col max-h-[85vh] min-h-[50vh]">
               {/* Drag Handle */}
               <div className="flex justify-center pt-3 pb-2">
-                <div className="w-10 h-1 bg-muted-foreground/30 rounded-full"></div>
+                <div className="w-10 h-1 bg-zinc-600 rounded-full"></div>
               </div>
 
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                <h3 className="text-xl font-semibold text-foreground">
-                  {locale === 'ar' ? 'الفلاتر' : 'Filters'}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-700/50">
+                <h3 className="text-xl font-semibold text-white">
+                  {t('common.filter')}
                 </h3>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                  className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-800/60"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -326,59 +432,59 @@ export default function ClientProductsPage() {
                 <div className="space-y-6">
                   {/* Product Type */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-3">
-                      {locale === 'ar' ? 'نوع المنتج' : 'Product Type'}
+                    <label className="block text-sm font-medium text-white mb-3">
+                      {t('products.type')}
                     </label>
                     <select
                       value={selectedType}
                       onChange={(e) => setSelectedType(e.target.value)}
-                      className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-base"
+                      className="w-full px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white text-base"
                     >
-                      <option value="">{locale === 'ar' ? 'جميع الأنواع' : 'All Types'}</option>
-                      <option value="digital">{locale === 'ar' ? 'منتجات رقمية' : 'Digital Products'}</option>
-                      <option value="subscription">{locale === 'ar' ? 'اشتراكات' : 'Subscriptions'}</option>
-                      <option value="course">{locale === 'ar' ? 'دورات' : 'Courses'}</option>
+                      <option value="">{t('products.allTypes')}</option>
+                      <option value="digital">{t('products.digital')}</option>
+                      <option value="subscription">{t('products.subscriptions')}</option>
+                      <option value="course">{t('products.courses')}</option>
                     </select>
                   </div>
 
                   {/* Sort By */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-3">
-                      {locale === 'ar' ? 'ترتيب حسب' : 'Sort By'}
+                    <label className="block text-sm font-medium text-white mb-3">
+                      {t('products.sortBy')}
                     </label>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-base"
+                      className="w-full px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white text-base"
                     >
-                      <option value="created_desc">{locale === 'ar' ? 'الأحدث أولا' : 'Newest First'}</option>
-                      <option value="created_asc">{locale === 'ar' ? 'الأقدم أولا' : 'Oldest First'}</option>
-                      <option value="name_asc">{locale === 'ar' ? 'الاسم أ-ي' : 'Name A-Z'}</option>
-                      <option value="name_desc">{locale === 'ar' ? 'الاسم ي-أ' : 'Name Z-A'}</option>
-                      <option value="price_asc">{locale === 'ar' ? 'السعر من الأقل للأعلى' : 'Price Low to High'}</option>
-                      <option value="price_desc">{locale === 'ar' ? 'السعر من الأعلى للأقل' : 'Price High to Low'}</option>
+                      <option value="created_desc">{t('products.newestFirst')}</option>
+                      <option value="created_asc">{t('products.oldestFirst')}</option>
+                      <option value="name_asc">{t('products.nameAZ')}</option>
+                      <option value="name_desc">{t('products.nameZA')}</option>
+                      <option value="price_asc">{t('products.priceLowToHigh')}</option>
+                      <option value="price_desc">{t('products.priceHighToLow')}</option>
                     </select>
                   </div>
 
                   {/* Price Range */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-3">
-                      {locale === 'ar' ? 'نطاق السعر' : 'Price Range'}
+                    <label className="block text-sm font-medium text-white mb-3">
+                      {t('products.priceRange')}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       <input
                         type="number"
-                        placeholder={locale === 'ar' ? 'الأدنى' : 'Minimum'}
+                        placeholder={t('products.minimum')}
                         value={priceRange.min}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                        className="px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-base"
+                        className="px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white text-base placeholder-zinc-400"
                       />
                       <input
                         type="number"
-                        placeholder={locale === 'ar' ? 'الأعلى' : 'Maximum'}
+                        placeholder={t('products.maximum')}
                         value={priceRange.max}
                         onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                        className="px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-base"
+                        className="px-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-white text-base placeholder-zinc-400"
                       />
                     </div>
                   </div>
@@ -390,10 +496,10 @@ export default function ClientProductsPage() {
                         type="checkbox"
                         checked={inStockOnly}
                         onChange={(e) => setInStockOnly(e.target.checked)}
-                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary focus:ring-offset-0"
+                        className="w-5 h-5 rounded border-zinc-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 bg-zinc-800"
                       />
-                      <span className="text-base font-medium text-foreground">
-                        {locale === 'ar' ? 'المتوفر فقط' : 'In Stock Only'}
+                      <span className="text-base font-medium text-white">
+                        {t('products.inStockOnly')}
                       </span>
                     </label>
                   </div>
@@ -401,7 +507,7 @@ export default function ClientProductsPage() {
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 border-t border-border bg-muted/20">
+              <div className="px-6 py-4 border-t border-zinc-700/50 bg-zinc-800/30">
                 <div className="space-y-3">
                   <Button
                     onClick={() => {
@@ -411,17 +517,17 @@ export default function ClientProductsPage() {
                       setInStockOnly(false);
                     }}
                     variant="outline"
-                    className="w-full py-3 text-base"
+                    className="w-full py-3 text-base border-zinc-600 text-zinc-300 hover:bg-zinc-700/60"
                     size="lg"
                   >
-                    {locale === 'ar' ? 'مسح جميع الفلاتر' : 'Clear All Filters'}
+                    {t('products.clearAllFilters')}
                   </Button>
                   <Button
                     onClick={() => setShowFilters(false)}
-                    className="w-full py-3 text-base"
+                    className="w-full py-3 text-base bg-emerald-500 hover:bg-emerald-600"
                     size="lg"
                   >
-                    {locale === 'ar' ? 'تطبيق الفلاتر' : 'Apply Filters'}
+                    {t('products.applyFilters')}
                   </Button>
                 </div>
               </div>

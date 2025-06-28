@@ -31,21 +31,21 @@ export default function MobileTabBar() {
 
   const tabs = [
     {
-      name: t('home'),
+      name: t('navigation.home'),
       href: '/',
       icon: HomeIcon,
       activeIcon: HomeSolidIcon,
       isActive: pathname === '/'
     },
     {
-      name: t('categories'),
+      name: t('navigation.categories'),
       href: '/categories',
       icon: Squares2X2Icon,
       activeIcon: Squares2X2SolidIcon,
       isActive: pathname.startsWith('/categories')
     },
     {
-      name: t('cart'),
+      name: t('navigation.cart'),
       href: '/cart',
       icon: ShoppingBagIcon,
       activeIcon: ShoppingBagSolidIcon,
@@ -53,14 +53,14 @@ export default function MobileTabBar() {
       badge: count > 0 ? count : undefined
     },
     {
-      name: t('wishlist'),
+      name: t('navigation.wishlist'),
       href: '/wishlist',
       icon: HeartIcon,
       activeIcon: HeartSolidIcon,
       isActive: pathname === '/wishlist'
     },
     {
-      name: t('account'),
+      name: t('navigation.account'),
       href: '/account',
       icon: UserIcon,
       activeIcon: UserSolidIcon,

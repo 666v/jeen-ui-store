@@ -2,37 +2,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/components/LanguageProvider';
+import { useTranslation } from '@/lib/useTranslation';
 
 export default function HeroSection() {
+  const { t } = useTranslation();
   const { locale } = useLanguage();
-
-  // Local translations for hero section
-  const t = (key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      en: {
-        'hero.badgeNew': 'NEW',
-        'hero.badgeAnnouncement': 'Introducing our new template collection',
-        'hero.headline1': 'Your ultimate destination',
-        'hero.headline2': 'for buying',
-        'hero.headlineHighlight': 'high-quality web templates',
-        'hero.subheading': 'Discover a curated collection of premium website templates designed for modern businesses, startups, and creators. Elevate your online presence with stunning, ready-to-use designs.',
-        'hero.ctaPrimary': 'All Templates',
-        'hero.ctaSecondary': 'Learn more',
-      },
-      ar: {
-        'hero.badgeNew': 'جديد',
-        'hero.badgeAnnouncement': 'اكتشف مجموعتنا الجديدة من القوالب',
-        'hero.headline1': 'وجهتك الأولى',
-        'hero.headline2': 'لشراء',
-        'hero.headlineHighlight': 'قوالب مواقع عالية الجودة',
-        'hero.subheading': 'اكتشف مجموعة مختارة من قوالب المواقع المميزة المصممة للأعمال والشركات الناشئة والمبدعين. ارتقِ بحضورك الرقمي مع تصاميم جاهزة وعصرية.',
-        'hero.ctaPrimary': 'جميع القوالب',
-        'hero.ctaSecondary': 'اعرف المزيد',
-      },
-    };
-    return translations[locale]?.[key] || translations['en'][key] || key;
-  };
-
+  
   // Simple cursor positions
   const [cursor1, setCursor1] = useState({ x: 20, y: 30 });
   const [cursor2, setCursor2] = useState({ x: 60, y: 50 });
@@ -111,7 +86,8 @@ export default function HeroSection() {
       
       {/* Headline */}
       <h1 className="text-center text-4xl sm:text-6xl font-extrabold text-white mb-6 leading-tight">
-        {t('hero.headline1')}<br className="hidden sm:block" />
+        {t('hero.headline1')}
+        <br className="hidden sm:block" />
         {t('hero.headline2')} <span className="text-emerald-400">{t('hero.headlineHighlight')}</span>
       </h1>
       

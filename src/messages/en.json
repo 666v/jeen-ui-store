@@ -37,7 +37,27 @@
     "yes": "Yes",
     "no": "No",
     "continue": "Continue",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "tools": "Tools",
+    "language": "Language",
+    "currency": "Currency",
+    "theme": "Theme",
+    "auth": "Authentication",
+    "navigation": "Navigation",
+    "menu": "Menu",
+    "swipeForMore": "Swipe for more",
+    "viewAllProducts": "View All Products",
+    "noContent": "No Content Available",
+    "noContentDescription": "This store doesn't have any content configured yet.",
+    "storeOwner": "Store Owner?",
+    "addComponentsInstructions": "Add components to your store to get started.",
+    "manageStore": "Manage Store",
+    "storeFeatures": "Store Features",
+    "storeFeaturesDescription": "Discover what makes our store special",
+    "errorLoadingComponents": "Error Loading Components",
+    "pleaseRefreshPage": "Please refresh the page to try again",
+    "customComponent": "Custom Component",
+    "componentType": "Component Type"
   },
   "navigation": {
     "home": "Home",
@@ -79,7 +99,21 @@
     "pleaseLogin": "Please Login",
     "loginRequired": "You need to be logged in to view this page",
     "authenticationRequired": "Authentication required",
-    "sessionExpired": "Your session has expired. Please log in again."
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "login_or_register": "Login or Register",
+    "send_verification_code": "Send Verification Code",
+    "enter_verification_code": "Enter Verification Code",
+    "complete_registration": "Complete Registration",
+    "creating_account": "Creating Account...",
+    "complete_registration_button": "Complete Registration",
+    "verification_code_sent": "Verification code sent",
+    "verifying": "Verifying code...",
+    "change_number": "Change Number",
+    "enter_code_label": "Enter the code sent to your number",
+    "resend_code": "Resend Code",
+    "resend_code_cooldown": "Resend Code ({seconds}s)",
+    "complete_profile": "Complete Your Profile",
+    "verify_code": "Verify Code"
   },
   "products": {
     "title": "Products",
@@ -111,7 +145,34 @@
     "priceRange": "Price Range",
     "category": "Category",
     "type": "Type",
-    "rating": "Rating"
+    "rating": "Rating",
+    "all": "All",
+    "digital": "Digital Products",
+    "courses": "Courses",
+    "subscriptions": "Subscriptions",
+    "allTypes": "All Types",
+    "newestFirst": "Newest First",
+    "oldestFirst": "Oldest First",
+    "nameAZ": "Name A-Z",
+    "nameZA": "Name Z-A",
+    "priceLowToHigh": "Price Low to High",
+    "priceHighToLow": "Price High to Low",
+    "minimum": "Minimum",
+    "maximum": "Maximum",
+    "inStockOnly": "In Stock Only",
+    "clearAllFilters": "Clear All Filters",
+    "applyFilters": "Apply Filters",
+    "showing": "Showing",
+    "results": "results",
+    "loadingMore": "Loading more...",
+    "showingAll": "Showing all {count} products",
+    "tryAdjustingFilters": "Try adjusting your search or filters to find what you're looking for.",
+    "clearFilters": "Clear Filters",
+    "discoverAmazing": "Discover amazing products and deals",
+    "adding": "Adding...",
+    "featuredCollection": "Featured Collection",
+    "discoverCurated": "Discover our carefully curated selection of premium products",
+    "viewAllProducts": "View All Products"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -258,7 +319,8 @@
     "fair": "Fair",
     "good": "Good",
     "veryGood": "Very Good",
-    "excellent": "Excellent"
+    "excellent": "Excellent",
+    "customerTestimonials": "Customer Testimonials"
   },
   "notifications": {
     "success": "Success",
@@ -320,7 +382,14 @@
     "headline2": "for buying",
     "headlineHighlight": "high-quality web templates",
     "subheading": "Discover a curated collection of premium website templates designed for modern businesses, startups, and creators. Elevate your online presence with stunning, ready-to-use designs.",
-    "ctaPrimary": "Get started",
+    "ctaPrimary": "All Templates",
     "ctaSecondary": "Learn more"
+  },
+  "maintenance": {
+    "title": "We are currently undergoing maintenance",
+    "reason_title": "Reason for Maintenance",
+    "estimated_time": "Estimated Time",
+    "contact": "If you have any questions, please contact us:",
+    "refresh": "Refresh"
   }
 }

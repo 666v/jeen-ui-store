@@ -612,9 +612,9 @@ export default function ClientProductPage({ slug, initialProduct }: ClientProduc
                     className="h-12 rounded-full flex items-center justify-center w-full font-bold text-base transition-all duration-200 shadow-lg border-0 bg-zinc-900/80 text-white hover:bg-emerald-500/10 hover:text-emerald-400 focus:ring-2 focus:ring-emerald-400/80 hover:scale-105"
                   >
                     <ShareIcon className="h-5 w-5 mr-2 text-emerald-400" />
-                    {locale === 'ar' ? 'مشاركة' : 'Share'}
-                  </Button>
-                </div>
+                  {locale === 'ar' ? 'مشاركة' : 'Share'}
+                </Button>
+              </div>
             {product.stock && (
                   <div className="text-sm mt-3 animate-fade-in">
                 {product.stock.unlimited ? (

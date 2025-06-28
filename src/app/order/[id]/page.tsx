@@ -250,23 +250,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     }
   };
 
-  // Check if order is completed (status 3 or 4 based on legacy logic)
+  // Debug logging - removed for production
   const isOrderCompleted = (() => {
-    if (!order?.status) return false;
-    const status = order.status as any;
-    if (typeof status === 'object' && status !== null && status.id) {
-      return status.id === 3 || status.id === 4;
-    }
+    const status = (order.status as any)?.name || order.status;
     return status === 'completed' || status === 'delivered';
   })();
-
-  // Debug logging
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Order debug info:', {
-      isOrderCompleted,
-      hasReview: !!(order as any)?.review
-    });
-  }
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();

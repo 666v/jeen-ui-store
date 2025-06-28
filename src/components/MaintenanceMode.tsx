@@ -3,6 +3,7 @@
 import React from 'react';
 import { useStore } from '@/components/StoreProvider';
 import { useLanguage } from '@/components/LanguageProvider';
+import { useTranslation } from '@/lib/useTranslation';
 
 interface MaintenanceModeProps {
   reason?: string;
@@ -10,27 +11,9 @@ interface MaintenanceModeProps {
 }
 
 export default function MaintenanceMode({ reason, estimatedTime }: MaintenanceModeProps) {
+  const { t } = useTranslation();
   const { store } = useStore();
   const { isRTL, locale } = useLanguage();
-  const t = (key: string) => {
-    const translations: Record<string, Record<string, string>> = {
-      en: {
-        'maintenance_title': 'We are currently undergoing maintenance',
-        'maintenance_reason_title': 'Reason for Maintenance',
-        'maintenance_estimated_time': 'Estimated Time',
-        'maintenance_contact': 'If you have any questions, please contact us:',
-        'maintenance_refresh': 'Refresh',
-      },
-      ar: {
-        'maintenance_title': 'نحن حالياً في وضع الصيانة',
-        'maintenance_reason_title': 'سبب الصيانة',
-        'maintenance_estimated_time': 'الوقت المتوقع',
-        'maintenance_contact': 'إذا كان لديك أي استفسار، يرجى التواصل معنا:',
-        'maintenance_refresh': 'تحديث',
-      }
-    };
-    return translations[locale]?.[key] || translations['en'][key] || translations['en'][key];
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 text-foreground relative overflow-hidden">
@@ -61,14 +44,14 @@ export default function MaintenanceMode({ reason, estimatedTime }: MaintenanceMo
 
         {/* Maintenance Title */}
         <h2 className="text-xl font-semibold mb-4 text-muted-foreground">
-          {t('maintenance_title')}
+          {t('maintenance.title')}
         </h2>
 
         {/* Maintenance Reason */}
         {reason && reason.trim() && (
           <div className="mb-6 p-4 bg-muted rounded-lg">
             <h3 className="font-medium mb-2 text-foreground">
-              {t('maintenance_reason_title')}
+              {t('maintenance.reason_title')}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               {reason.trim()}
@@ -80,7 +63,7 @@ export default function MaintenanceMode({ reason, estimatedTime }: MaintenanceMo
         {estimatedTime && estimatedTime.trim() && (
           <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <h3 className="font-medium mb-2 text-primary">
-              {t('maintenance_estimated_time')}
+              {t('maintenance.estimated_time')}
             </h3>
             <p className="text-primary text-sm">
               {estimatedTime.trim()}
@@ -92,7 +75,7 @@ export default function MaintenanceMode({ reason, estimatedTime }: MaintenanceMo
         {/* Contact Information */}
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            {t('maintenance_contact')}
+            {t('maintenance.contact')}
           </p>
           
           {/* Store Contact Info */}
@@ -165,7 +148,7 @@ export default function MaintenanceMode({ reason, estimatedTime }: MaintenanceMo
             className="inline-flex items-center space-x-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             <i className="fas fa-refresh text-sm"></i>
-            <span>{t('maintenance_refresh')}</span>
+            <span>{t('maintenance.refresh')}</span>
           </button>
         </div>
       </div>

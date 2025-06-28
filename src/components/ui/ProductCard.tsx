@@ -7,6 +7,18 @@ import { useTranslation } from '@/lib/useTranslation';
 import { useAddToCart } from '@/hooks/useAddToCart';
 import { Button } from '@/components/ui/button';
 import { useCurrency } from '@/lib/currency';
+import { motion } from 'framer-motion';
+import { 
+  HeartIcon, 
+  ShoppingCartIcon, 
+  StarIcon,
+  EyeIcon,
+  SparklesIcon,
+  BoltIcon,
+  BookOpenIcon,
+  CreditCardIcon
+} from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 interface Product {
   id: number;
@@ -38,6 +50,7 @@ interface Product {
       color?: string;
     };
   };
+  type?: string;
 }
 
 interface ProductCardProps {
@@ -59,6 +72,8 @@ export default function ProductCard({
   const { addToCart, isAddingToCart } = useAddToCart();
   const { formatPrice } = useCurrency();
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   // Handle hydration
   useEffect(() => {
@@ -80,71 +95,260 @@ export default function ProductCard({
     addToCart(product, 1);
   };
 
+  const handleWishlistToggle = () => {
+    setIsWishlisted(!isWishlisted);
+  };
+
+  // Get product type icon
+  const getProductTypeIcon = () => {
+    switch (product.type) {
+      case 'digital':
+        return <BoltIcon className="w-4 h-4" />;
+      case 'course':
+        return <BookOpenIcon className="w-4 h-4" />;
+      case 'subscription':
+        return <CreditCardIcon className="w-4 h-4" />;
+      default:
+        return <SparklesIcon className="w-4 h-4" />;
+    }
+  };
+
+  // Compact variant for list view
+  if (variant === 'compact') {
+    return (
+      <motion.div
+        className={`relative bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-3xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-emerald-900/20 hover:border-emerald-500/30 group ${className}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        dir="auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex">
+          {/* Product Image */}
+          <Link href={`/products/${product.slug}`} className="block relative flex-shrink-0">
+            <div className="relative w-32 h-32 bg-gradient-to-br from-zinc-800 to-zinc-700 overflow-hidden">
+              {product.image?.full_link ? (
+                <Image
+                  src={product.image.full_link}
+                  alt={product.image.alt_text || product.name}
+                  fill
+                  className="object-cover w-full h-full transition-transform duration-300"
+                  sizes="128px"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-700">
+                  <svg className="w-8 h-8 text-zinc-600/40" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                  </svg>
+                </div>
+              )}
+              
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {/* Dynamic Badge */}
+              {product.sales?.badge?.text && (
+                <div className="absolute top-2 left-2 rtl:left-auto rtl:right-2">
+                  <span
+                    className="text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg backdrop-blur-sm"
+                    style={product.sales.badge.color ? { backgroundColor: product.sales.badge.color } : { backgroundColor: '#ef4444' }}
+                  >
+                    {product.sales.badge.text}
+                  </span>
+                </div>
+              )}
+            </div>
+          </Link>
+
+          {/* Product Info */}
+          <div className="flex-1 flex flex-col p-4">
+            <div className="flex-1">
+              {/* Product Type Badge */}
+              <div className="mb-3">
+                <span className="inline-flex items-center gap-1 text-emerald-400 text-xs font-bold uppercase tracking-wide bg-emerald-500/10 px-2 py-1 rounded-lg">
+                  {getProductTypeIcon()}
+                  {product.type === 'digital' ? t('products.digital') : 
+                   product.type === 'course' ? t('products.courses') : 
+                   product.type === 'subscription' ? t('products.subscriptions') : 
+                   t('products.category')}
+                </span>
+              </div>
+              
+              {/* Product Name */}
+              <Link href={`/products/${product.slug}`}>
+                <h3 className="font-bold text-white mb-2 text-lg leading-tight hover:text-emerald-400 transition-colors line-clamp-2">
+                  {product.name}
+                </h3>
+              </Link>
+              
+              {/* Rating */}
+              {product.rating && (
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-1 bg-zinc-800/60 backdrop-blur-sm px-2 py-1 rounded-lg">
+                    <StarIcon className="w-4 h-4 text-yellow-400 fill-current" />
+                    <span className="text-sm text-zinc-300 font-medium">{product.rating.toFixed(1)}</span>
+                  </div>
+                  {product.reviews_count && (
+                    <span className="text-xs text-zinc-400">({product.reviews_count})</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Price and Actions */}
+            <div className="flex items-center justify-between">
+              {/* Price */}
+              <div className="flex items-end gap-2">
+                <span className="text-xl font-extrabold bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
+                  {formattedActualPrice}
+                  <span className="text-sm font-normal text-white/80 ml-1">{product.price.currency}</span>
+                </span>
+                {hasDiscount && formattedOriginalPrice && (
+                  <span className="text-sm text-zinc-400 line-through">
+                    {formattedOriginalPrice}
+                  </span>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3">
+                {/* Wishlist Button */}
+                {showWishlist && (
+                  <button 
+                    onClick={handleWishlistToggle}
+                    className="w-11 h-11 flex items-center justify-center rounded-xl border border-zinc-600 bg-zinc-800/60 text-zinc-300 hover:text-emerald-400 hover:border-emerald-400 transition-all duration-300"
+                  >
+                    {isWishlisted ? (
+                      <HeartSolidIcon className="w-5 h-5 text-emerald-400" />
+                    ) : (
+                      <HeartIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                )}
+                
+                {/* Add to Cart Button */}
+                {showAddToCart && (
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart(product.id)}
+                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 text-sm h-11"
+                    size="sm"
+                  >
+                    <ShoppingCartIcon className="w-4 h-4 mr-2" />
+                    {isAddingToCart(product.id) ? t('products.adding') : t('products.addToCart')}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Default grid variant
   return (
-    <div
-      className={`relative bg-zinc-900 rounded-2xl shadow-lg border border-zinc-800/70 overflow-hidden flex flex-col transition-all duration-200 hover:shadow-emerald-900/40 ${className}`}
+    <motion.div
+      className={`relative bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-3xl shadow-lg overflow-hidden flex flex-col transition-all duration-500 hover:shadow-emerald-900/20 hover:border-emerald-500/30 group ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       dir="auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
     >
-      {/* Product Image */}
-      <Link href={`/products/${product.slug}`} className="block relative">
-        <div className="relative w-full h-48 sm:h-56 bg-zinc-800">
+      {/* Product Image Container */}
+      <Link href={`/products/${product.slug}`} className="block relative overflow-hidden">
+        <div className="relative w-full h-48 sm:h-56 bg-gradient-to-br from-zinc-800 to-zinc-700">
           {product.image?.full_link ? (
             <Image
               src={product.image.full_link}
               alt={product.image.alt_text || product.name}
               fill
-              className="object-cover w-full h-full"
+              className="object-cover w-full h-full transition-transform duration-300"
               sizes="(max-width: 640px) 100vw, 400px"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-700">
               <svg className="w-16 h-16 text-zinc-600/40" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                </svg>
+              </svg>
             </div>
           )}
-          {/* Dynamic Badge */}
-          {product.sales?.badge?.text && (
-            <div className="absolute top-3 left-3 rtl:left-auto rtl:right-3">
+          
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          {/* Quick View Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-2">
+              <EyeIcon className="w-6 h-6 text-white" />
+            </div>
+          </div>
+
+          {/* Top Badges */}
+          <div className="absolute top-3 left-3 rtl:left-auto rtl:right-3 flex flex-col gap-2">
+            {/* Dynamic Badge */}
+            {product.sales?.badge?.text && (
               <span
-                className="text-white text-xs font-bold px-3 py-1 rounded-md shadow"
-                style={product.sales.badge.color ? { backgroundColor: product.sales.badge.color } : { backgroundColor: '#444' }}
+                className="text-white text-xs font-bold px-3 py-1 rounded-lg shadow-lg backdrop-blur-sm"
+                style={product.sales.badge.color ? { backgroundColor: product.sales.badge.color } : { backgroundColor: '#ef4444' }}
               >
                 {product.sales.badge.text}
               </span>
-            </div>
-          )}
-          {/* Rating Badge */}
-          {product.rating && (
-            <div className="absolute bottom-3 left-3 rtl:left-auto rtl:right-3 flex items-center gap-1 bg-zinc-800 text-yellow-400 text-xs font-bold px-2 py-1 rounded-md shadow">
-              <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              <span>{product.rating.toFixed(1)}</span>
-            </div>
-          )}
+            )}
+            
+            {/* Discount Badge */}
+            {hasDiscount && (
+              <span className="bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs font-bold px-3 py-1 rounded-lg shadow-lg">
+                -{product.price.discount_percentage}%
+              </span>
+            )}
+          </div>
+
+          {/* Bottom Badges */}
+          <div className="absolute bottom-3 left-3 rtl:left-auto rtl:right-3 flex flex-col gap-2">
+            {/* Rating Badge */}
+            {product.rating && (
+              <div className="flex items-center gap-1 bg-zinc-800/80 backdrop-blur-sm text-yellow-400 text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
+                <StarIcon className="w-4 h-4 fill-current" />
+                <span>{product.rating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
         </div>
       </Link>
 
       {/* Product Info */}
-      <div className="flex-1 flex flex-col p-4">
-        {/* Category */}
-        <div className="mb-1">
-          <span className="text-emerald-400 text-xs font-bold">{t('category') || 'تصنيف'}</span>
+      <div className="flex-1 flex flex-col p-6">
+        {/* Product Type Badge */}
+        <div className="mb-3">
+          <span className="inline-flex items-center gap-1 text-emerald-400 text-xs font-bold uppercase tracking-wide bg-emerald-500/10 px-3 py-1 rounded-lg">
+            {getProductTypeIcon()}
+            {product.type === 'digital' ? t('products.digital') : 
+             product.type === 'course' ? t('products.courses') : 
+             product.type === 'subscription' ? t('products.subscriptions') : 
+             t('products.category')}
+          </span>
         </div>
+        
         {/* Product Name */}
         <Link href={`/products/${product.slug}`}>
-          <h3 className="font-bold text-white mb-1 truncate text-base leading-tight hover:text-emerald-400 transition-colors">
+          <h3 className="font-bold text-white mb-3 text-lg leading-tight hover:text-emerald-400 transition-colors line-clamp-2">
             {product.name}
           </h3>
         </Link>
-        {/* Description (placeholder, as not all products have it) */}
-        <div className="text-zinc-400 text-xs mb-2 truncate">
-          {product.image?.alt_text || t('productDescription') || 'وصف المنتج'}
-          </div>
-        {/* Price */}
-        <div className="flex items-end gap-2 mb-3">
-          <span className="text-lg font-extrabold text-emerald-400">
+        
+        {/* Description */}
+        <div className="text-zinc-400 text-sm mb-4 line-clamp-2 leading-relaxed">
+          {product.image?.alt_text || t('products.description')}
+        </div>
+        
+        {/* Price Section */}
+        <div className="flex items-end gap-3 mb-6">
+          <span className="text-2xl font-extrabold bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
             {formattedActualPrice}
             <span className="text-sm font-normal text-white/80 ml-1">{product.price.currency}</span>
           </span>
@@ -154,32 +358,40 @@ export default function ProductCard({
             </span>
           )}
         </div>
+        
         {/* Actions */}
-        <div className="flex items-center gap-2 mt-auto">
+        <div className="flex items-center gap-3 mt-auto">
           {/* Wishlist Button */}
           {showWishlist && (
-            <button className="w-11 h-11 flex items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-emerald-400 hover:border-emerald-400 transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
+            <button 
+              onClick={handleWishlistToggle}
+              className="w-12 h-12 flex items-center justify-center rounded-2xl border border-zinc-600 bg-zinc-800/60 text-zinc-300 hover:text-emerald-400 hover:border-emerald-400 transition-all duration-300"
+            >
+              {isWishlisted ? (
+                <HeartSolidIcon className="w-6 h-6 text-emerald-400" />
+              ) : (
+                <HeartIcon className="w-6 h-6" />
+              )}
             </button>
           )}
-        {/* Add to Cart Button */}
-        {showAddToCart && (
-          <Button
-            onClick={handleAddToCart}
-            disabled={isAddingToCart(product.id)}
-              className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-base"
-            size="sm"
-          >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0a2 2 0 11-4 0m4 0a2 2 0 114 0" />
-                </svg>
+          
+          {/* Add to Cart Button */}
+          {showAddToCart && (
+            <Button
+              onClick={handleAddToCart}
+              disabled={isAddingToCart(product.id)}
+              className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 rounded-2xl shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 text-base h-12"
+              size="sm"
+            >
+              <ShoppingCartIcon className="w-5 h-5" />
               {isAddingToCart(product.id) ? t('products.adding') : t('products.addToCart')}
-          </Button>
-        )}
+            </Button>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* Hover Effect Line */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+    </motion.div>
   );
 }

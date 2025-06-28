@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslation } from '@/lib/useTranslation';
 import { ChevronLeftIcon, ChevronRightIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import ProductCard from '@/components/ui/ProductCard';
+import { GridPattern } from '@/components/magicui/grid-pattern';
 
 interface Product {
   id: number;
@@ -72,25 +73,61 @@ export default function ProductListComponent({ component }: ProductListComponent
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
+        <div className="mb-12">
+          <div className="relative w-full bg-gradient-to-br from-zinc-900/60 via-zinc-900/40 to-zinc-800/60 backdrop-blur-2xl border border-zinc-800/50 rounded-2xl shadow-xl px-6 py-8 flex flex-col items-center justify-center overflow-hidden">
+            {/* Grid Pattern Background */}
+            <GridPattern className="absolute inset-0 w-full h-full opacity-20 pointer-events-none [mask-image:radial-gradient(300px_circle_at_center,white,transparent)]" />
+            
+            {/* Decorative Elements */}
+            <div className="absolute top-3 left-3 w-1.5 h-1.5 bg-emerald-400 rounded-full opacity-50"></div>
+            <div className="absolute top-4 right-4 w-1 h-1 bg-blue-400 rounded-full opacity-50"></div>
+            <div className="absolute bottom-4 left-4 w-1 h-1 bg-purple-400 rounded-full opacity-50"></div>
+            <div className="absolute bottom-3 right-3 w-1.5 h-1.5 bg-emerald-400 rounded-full opacity-50"></div>
+            
+            <div className="relative z-10 flex flex-col items-center w-full">
+              {/* Icon Badge */}
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
+                <div className="relative flex items-center justify-center w-14 h-14 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border border-emerald-500/30 rounded-xl shadow-lg">
+                  <svg className="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Section Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-xs font-medium mb-4">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                <span>{t('products.featuredCollection')}</span>
+              </div>
+              
+              {/* Main Title */}
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-4 tracking-tight">
+                <span className="bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent">
+                  {title}
+                </span>
+              </h2>
+              
+              {/* Decorative Line */}
+              <div className="w-24 h-0.5 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-full mx-auto mb-4"></div>
+              
+              {/* Subtitle */}
+              <p className="text-zinc-300 text-base sm:text-lg text-center max-w-xl mb-6 leading-relaxed">
+                {t('products.discoverCurated')}
+              </p>
+              
+              {/* CTA Button */}
+              {view_all_link && (
+                <Link
+                  href={view_all_link}
+                  className="group inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 hover:scale-105"
+                >
+                  <span>{t('products.viewAllProducts')}</span>
+                  <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </Link>
+              )}
+            </div>
           </div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent mb-4">
-            {title}
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto mb-6"></div>
-          {view_all_link && (
-            <Link
-              href={view_all_link}
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary to-primary/80 text-white px-6 py-3 rounded-full hover:from-primary/90 hover:to-primary/70 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              <span className="font-medium">View All</span>
-              <ArrowRightIcon className="h-5 w-5" />
-            </Link>
-          )}
         </div>
 
         {/* Products Display */}

@@ -37,7 +37,27 @@
     "yes": "نعم",
     "no": "لا",
     "continue": "متابعة",
-    "confirm": "تأكيد"
+    "confirm": "تأكيد",
+    "tools": "الأدوات",
+    "language": "اللغة",
+    "currency": "العملة",
+    "theme": "المظهر",
+    "auth": "المصادقة",
+    "navigation": "التنقل",
+    "menu": "القائمة",
+    "swipeForMore": "اسحب للمزيد",
+    "viewAllProducts": "عرض جميع المنتجات",
+    "noContent": "لا يوجد محتوى متاح",
+    "noContentDescription": "هذا المتجر لا يحتوي على أي محتوى مُعد بعد.",
+    "storeOwner": "مالك المتجر؟",
+    "addComponentsInstructions": "أضف مكونات إلى متجرك للبدء.",
+    "manageStore": "إدارة المتجر",
+    "storeFeatures": "ميزات المتجر",
+    "storeFeaturesDescription": "اكتشف ما يجعل متجرنا مميزاً",
+    "errorLoadingComponents": "خطأ في تحميل المكونات",
+    "pleaseRefreshPage": "يرجى تحديث الصفحة والمحاولة مرة أخرى",
+    "customComponent": "مكون مخصص",
+    "componentType": "نوع المكون"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -79,7 +99,21 @@
     "pleaseLogin": "يرجى تسجيل الدخول",
     "loginRequired": "تحتاج إلى تسجيل الدخول لعرض هذه الصفحة",
     "authenticationRequired": "المصادقة مطلوبة",
-    "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى."
+    "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "login_or_register": "تسجيل الدخول أو إنشاء حساب",
+    "send_verification_code": "إرسال رمز التحقق",
+    "enter_verification_code": "أدخل رمز التحقق",
+    "complete_registration": "إكمال التسجيل",
+    "creating_account": "جاري إنشاء الحساب...",
+    "complete_registration_button": "إكمال التسجيل",
+    "verification_code_sent": "تم إرسال رمز التحقق",
+    "verifying": "التحقق من الرمز...",
+    "change_number": "تغيير الرقم",
+    "enter_code_label": "أدخل الرمز المرسل إلى رقمك",
+    "resend_code": "إعادة إرسال الرمز",
+    "resend_code_cooldown": "إعادة إرسال الرمز ({seconds}s)",
+    "complete_profile": "أكمل ملفك الشخصي",
+    "verify_code": "تحقق من الرمز"
   },
   "products": {
     "title": "المنتجات",
@@ -111,7 +145,34 @@
     "priceRange": "نطاق السعر",
     "category": "الفئة",
     "type": "النوع",
-    "rating": "التقييم"
+    "rating": "التقييم",
+    "all": "الكل",
+    "digital": "المنتجات الرقمية",
+    "courses": "الدورات",
+    "subscriptions": "الاشتراكات",
+    "allTypes": "جميع الأنواع",
+    "newestFirst": "الأحدث أولاً",
+    "oldestFirst": "الأقدم أولاً",
+    "nameAZ": "الاسم أ-ي",
+    "nameZA": "الاسم ي-أ",
+    "priceLowToHigh": "السعر من الأقل للأعلى",
+    "priceHighToLow": "السعر من الأعلى للأقل",
+    "minimum": "الأدنى",
+    "maximum": "الأعلى",
+    "inStockOnly": "المتوفر فقط",
+    "clearAllFilters": "مسح جميع الفلاتر",
+    "applyFilters": "تطبيق الفلاتر",
+    "showing": "عرض",
+    "results": "نتيجة",
+    "loadingMore": "تحميل المزيد...",
+    "showingAll": "عرض جميع {count} منتج",
+    "tryAdjustingFilters": "جرب تعديل البحث أو الفلاتر للعثور على ما تبحث عنه.",
+    "clearFilters": "مسح الفلاتر",
+    "discoverAmazing": "اكتشف منتجات وصفقات مذهلة",
+    "adding": "جاري الإضافة...",
+    "featuredCollection": "مجموعة مميزة",
+    "discoverCurated": "اكتشف مجموعتنا المختارة بعناية من المنتجات المميزة",
+    "viewAllProducts": "عرض جميع المنتجات"
   },
   "cart": {
     "title": "سلة التسوق",
@@ -258,7 +319,8 @@
     "fair": "مقبول",
     "good": "جيد",
     "veryGood": "جيد جداً",
-    "excellent": "ممتاز"
+    "excellent": "ممتاز",
+    "customerTestimonials": "آراء العملاء"
   },
   "notifications": {
     "success": "نجاح",
@@ -320,7 +382,14 @@
     "headline2": "لشراء",
     "headlineHighlight": "قوالب مواقع عالية الجودة",
     "subheading": "اكتشف مجموعة مختارة من قوالب المواقع المميزة المصممة للأعمال والشركات الناشئة والمبدعين. ارتقِ بحضورك الرقمي مع تصاميم جاهزة وعصرية.",
-    "ctaPrimary": "ابدأ الآن",
+    "ctaPrimary": "جميع القوالب",
     "ctaSecondary": "اعرف المزيد"
+  },
+  "maintenance": {
+    "title": "نحن حالياً في وضع الصيانة",
+    "reason_title": "سبب الصيانة",
+    "estimated_time": "الوقت المتوقع",
+    "contact": "إذا كان لديك أي استفسار، يرجى التواصل معنا:",
+    "refresh": "تحديث"
   }
 }

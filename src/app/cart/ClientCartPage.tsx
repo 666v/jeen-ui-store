@@ -83,77 +83,28 @@ export default function CartPage() {
   };
 
   const handleCheckout = async () => {
-    // Check authentication using helper functions
-    const authToken = getAuthToken();
-    const userIsAuthenticated = isUserAuthenticated();
-
-    // More robust authentication check
-    if (!authToken || !userIsAuthenticated) {
-      toast.error('Please log in to continue with checkout');
+    if (!isAuthenticated) {
       setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (count === 0) {
+      toast.error(t('checkout.cartEmpty'));
       return;
     }
 
     setIsCheckingOut(true);
     try {
-      // Ensure cart is not empty (matching legacy validation)
-      if (count === 0) {
-        toast.error('السلة فارغة'); // Arabic message like legacy
-        return;
-      }
-
-      // Force refresh cart to ensure it's synced
-      await fetchCart();
-
-      // Double-check cart count after refresh
-      if (count === 0) {
-        toast.error(locale === 'ar' ? 'السلة فارغة بعد تحديث البيانات' : 'Cart is empty after refresh');
-        return;
-      }
-
-      console.log('Creating checkout with cart count:', count, 'items:', Object.keys(items).length);
       const checkoutData = await checkoutApi.create();
-      console.log('Checkout response:', checkoutData);
-
-
-      // Handle different checkout responses (matching legacy behavior)
-      if (checkoutData.type === 'free_order') {
-        // Free order - redirect to order page like legacy
-        toast.success('تم إنشاء الطلب بنجاح!'); // Arabic success message
-        router.push(`/order/${checkoutData.order_id}`);
-      } else if (checkoutData.type === 'payment_required') {
-        // Payment required - redirect to payment page like legacy
-        if (checkoutData.redirect_url || checkoutData.checkout_url) {
-          window.location.href = checkoutData.redirect_url || checkoutData.checkout_url;
-        } else {
-          toast.error('خطأ في إنشاء رابط الدفع'); // Arabic error message
-        }
+      
+      if (checkoutData?.checkout_url) {
+        window.location.href = checkoutData.checkout_url;
       } else {
-        // Handle generic response format (fallback)
-        if (checkoutData.checkout_url) {
-          window.location.href = checkoutData.checkout_url;
-        } else {
-          toast.success('تم إنشاء الطلب بنجاح!');
-          router.push('/account');
-        }
+        toast.error(t('checkout.checkoutFailed'));
       }
-    } catch (error: any) {
-
-
-      // Handle authentication errors
-      if (error.response?.status === 401) {
-        localStorage.removeItem('auth_token');
-        // Clear Zustand state directly without calling logout API
-        useAuth.setState({
-          isAuthenticated: false
-        });
-        toast.error('انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.'); // Arabic message
-        setIsAuthModalOpen(true);
-      } else {
-        // Show Arabic error messages like legacy system
-        const errorMessage = error.response?.data?.message || error.message || 'فشل في إتمام عملية الدفع. يرجى المحاولة مرة أخرى.';
-        toast.error(errorMessage);
-      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error(t('checkout.checkoutFailed'));
     } finally {
       setIsCheckingOut(false);
     }
@@ -399,7 +350,6 @@ export default function CartPage() {
             try {
               const updatedCart = await fetchCart();
               const itemCount = Object.keys(updatedCart?.items || {}).length;
-              console.log('Cart after login - count:', itemCount, 'cart data:', updatedCart);
               
               if (itemCount > 0) {
                 handleCheckout();
