@@ -312,3 +312,90 @@
   outline: none !important;
 }
 
+/* Custom Phone Input Styles for Auth Modal */
+.auth-phone-input .PhoneInput {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  background: rgb(39 39 42 / 0.5) !important;
+  border: 1px solid rgb(63 63 70 / 0.5) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  direction: ltr !important;
+}
+
+.auth-phone-input .PhoneInputCountry {
+  background: rgb(39 39 42 / 0.5) !important;
+  border: none !important;
+  border-right: 1px solid rgb(63 63 70 / 0.5) !important;
+  padding: 12px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 60px !important;
+  order: 0 !important;
+  direction: ltr !important;
+}
+
+.auth-phone-input .PhoneInputCountrySelect {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 14px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  outline: none !important;
+}
+
+.auth-phone-input .PhoneInputCountrySelectArrow {
+  color: rgb(161 161 170) !important;
+  margin-left: 4px !important;
+}
+
+.auth-phone-input .PhoneInputCountryIcon {
+  width: 20px !important;
+  height: 15px !important;
+  margin-right: 8px !important;
+}
+
+.auth-phone-input .PhoneInputInput {
+  flex: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 16px !important;
+  padding: 12px 16px !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: block !important;
+}
+
+.auth-phone-input .PhoneInputInput::placeholder {
+  color: rgb(161 161 170) !important;
+}
+
+.auth-phone-input .PhoneInputInput:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.auth-phone-input .PhoneInputCountrySelect:focus {
+  outline: none !important;
+}
+
+/* Dropdown styles */
+.auth-phone-input .PhoneInputCountrySelect option {
+  background: rgb(24 24 27) !important;
+  color: white !important;
+  padding: 8px !important;
+}
+
+/* Focus states */
+.auth-phone-input:focus-within {
+  border-color: rgb(63 63 70 / 0.5) !important;
+  box-shadow: none !important;
+}
+

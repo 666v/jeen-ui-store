@@ -90,9 +90,9 @@ export default function ProductListComponent({ component }: ProductListComponent
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-xl blur-lg"></div>
                 <div className="relative flex items-center justify-center w-14 h-14 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border border-emerald-500/30 rounded-xl shadow-lg">
                   <svg className="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                </div>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
               </div>
               
               {/* Section Badge */}
@@ -104,9 +104,9 @@ export default function ProductListComponent({ component }: ProductListComponent
               {/* Main Title */}
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-4 tracking-tight">
                 <span className="bg-gradient-to-r from-white via-emerald-100 to-emerald-200 bg-clip-text text-transparent">
-                  {title}
+            {title}
                 </span>
-              </h2>
+          </h2>
               
               {/* Decorative Line */}
               <div className="w-24 h-0.5 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-full mx-auto mb-4"></div>
@@ -117,15 +117,15 @@ export default function ProductListComponent({ component }: ProductListComponent
               </p>
               
               {/* CTA Button */}
-              {view_all_link && (
-                <Link
-                  href={view_all_link}
+          {view_all_link && (
+            <Link
+              href={view_all_link}
                   className="group inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 hover:scale-105"
-                >
+            >
                   <span>{t('products.viewAllProducts')}</span>
                   <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
-              )}
+            </Link>
+          )}
             </div>
           </div>
         </div>
